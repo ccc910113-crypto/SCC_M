@@ -1,0 +1,609 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>斷路器動作特性試驗分析系統 - 完整分析報告</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <!-- Header Section -->
+    <div class="header">
+        <div class="container">
+            <div class="header-content">
+                <div class="header-main">
+                    <h1>⚡ 斷路器動作特性試驗分析系統</h1>
+                    <p>統計製程管制 - 基於 74 筆實測數據的專業分析 (7個專案完整數據)</p>
+                </div>
+                <div class="header-stats">
+                    <div class="header-stat">
+                        <div class="header-stat-value">74</div>
+                        <div class="header-stat-label">總測量數</div>
+                    </div>
+                    <div class="header-stat">
+                        <div class="header-stat-value">7</div>
+                        <div class="header-stat-label">專案數</div>
+                    </div>
+                    <div class="header-stat">
+                        <div class="header-stat-value">25</div>
+                        <div class="header-stat-label">檔位數</div>
+                    </div>
+                    <div class="header-stat">
+                        <div class="header-stat-value">14</div>
+                        <div class="header-stat-label">異常點</div>
+                    </div>
+                    <div class="header-stat">
+                        <button id="themeToggle" class="control-btn" type="button" aria-pressed="false" aria-label="切換深色模式">🌙 深色模式</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="container">
+        <!-- System Issue Alert -->
+        <div class="system-alert">
+            <h4>⚠️ 斷路器動作特性異常警示</h4>
+            <p>檢測到多項動作特性異常：(1) 彰埤一投入操作時間異常，多項超出38ms標準 (2) 松湖速度異常，部分低於2.0m/s標準 (3) 岡山動作時間接近上限120ms。建議立即檢查相關斷路器動作機構。</p>
+        </div>
+
+        <!-- Navigation Tabs -->
+        <div class="nav-tabs">
+            <button class="nav-tab active" onclick="showSection('overview')">
+                📋 概況總覽
+            </button>
+            <button class="nav-tab" onclick="showSection('control-charts')">
+                📈 管制圖
+            </button>
+            <button class="nav-tab" onclick="showSection('histogram')">
+                📊 直方圖
+            </button>
+            <button class="nav-tab" onclick="showSection('scatter')">
+                📉 散布圖
+            </button>
+            <button class="nav-tab" onclick="showSection('fishbone')">
+                🐟 要因圖
+            </button>
+            <button class="nav-tab" onclick="showSection('pareto')">
+                📊 柏拉圖
+            </button>
+            <button class="nav-tab" onclick="showSection('statistics')">
+                📊 統計分析
+            </button>
+        </div>
+
+        <!-- Overview Section -->
+        <div id="overview" class="content-section active">
+            <div class="stats-grid">
+                <div class="stats-card excellent">
+                    <div class="stats-title">整體品質狀況</div>
+                    <div class="stats-value" style="color: #d69e2e;">需要改善</div>
+                    <div class="stats-subtitle">最新統計概況</div>
+                    <div class="stats-details">
+                        • 總測量數: 74 筆 (7個專案完整數據)<br>
+                        • 異常點: 14 個 (18.9%)<br>
+                        • 檔位數：25 檔（尚未完整）<br>
+                        • 測量項目：CLOSE/OPEN 動作時間、三相相差時間、速度、CO 自由跳脫（第一組／第二組）<br>
+                        • 異常主要集中在「速度」與「自由跳脫」
+                    </div>
+                </div>
+
+                <div class="stats-card critical">
+                    <div class="stats-title">重點關注項目</div>
+                    <div class="stats-value" style="color: #e53e3e;">彰埤一投入操作異常</div>
+                    <div class="stats-subtitle">多項超出38ms標準</div>
+                    <div class="stats-details" id="worstPhaseDetails">
+                        • 彰埤一投入操作: 39.1ms (超出標準)<br>
+                        • 標準範圍: 8.33~38ms<br>
+                        • 松湖速度: 2.26m/s (接近下限)<br>
+                        • 岡山動作時間: 100.9ms (接近上限)<br>
+                        • 建議：立即檢查彰埤一斷路器機構
+                    </div>
+                </div>
+
+                <div class="stats-card good">
+                    <div class="stats-title">製程能力指標</div>
+                    <div class="stats-value" style="color: #3182ce;">動作時間良好，投入操作異常</div>
+                    <div class="stats-subtitle">各測量項目分析</div>
+                    <div class="stats-details">
+                        • 動作時間平均Cpk: 2.1 (良好)<br>
+                        • 投入操作平均Cpk: 0.8 (急需改善)<br>
+                        • 速度平均Cpk: 1.9 (可接受)<br>
+                        • 投入操作為主要問題源
+                    </div>
+                </div>
+
+                <div class="stats-card excellent">
+                    <div class="stats-title">最佳表現群組</div>
+                    <div class="stats-value" style="color: #38a169;">永興二動作時間</div>
+                    <div class="stats-subtitle">動作時間最穩定</div>
+                    <div class="stats-details" id="bestPhaseDetails">
+                        • 動作時間標準差: 2.1ms<br>
+                        • 無異常點<br>
+                        • Cpk: 2.8 (優良)<br>
+                        • 測量範圍: 92.4~102.3ms<br>
+                        • 製程高度穩定
+                    </div>
+                </div>
+            </div>
+
+            <div class="card">
+                <h3 class="section-title">📊 詳細分析數據 (斷路器動作特性試驗)</h3>
+                <table class="data-table" id="overviewTable">
+                    <thead>
+                        <tr>
+                            <th>專案</th>
+                            <th>測量項目</th>
+                            <th>樣本數</th>
+                            <th>平均值</th>
+                            <th>標準差</th>
+                            <th>全距</th>
+                            <th>規格範圍</th>
+                            <th>管制範圍</th>
+                            <th>異常點</th>
+                            <th>Cpk</th>
+                            <th>狀態</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <!-- Data will be populated by JavaScript -->
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="card">
+                <h3 class="section-title">🧭 任務診斷結果</h3>
+                <table class="data-table" id="taskDiagnosisTable">
+                    <thead>
+                        <tr>
+                            <th>專案</th>
+                            <th>狀況</th>
+                            <th>診斷</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <!-- Filled by JavaScript -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Control Charts Section -->
+        <div id="control-charts" class="content-section">
+            <div class="control-panel">
+                <div class="control-group">
+                    <div class="control-title">🏭 選擇專案</div>
+                    <div class="control-buttons" id="projectButtons">
+                        <!-- Will be populated by JavaScript -->
+                    </div>
+                </div>
+                
+                <div class="control-group">
+                    <div class="control-title">⚡ 操作類型</div>
+                    <div class="control-buttons" id="operationButtons">
+                        <!-- Will be populated by JavaScript -->
+                    </div>
+                </div>
+                
+                <div class="control-group">
+                    <div class="control-title">📊 群組選擇</div>
+                    <div class="control-buttons" id="groupButtons">
+                        <!-- Will be populated by JavaScript -->
+                    </div>
+                </div>
+                
+                <div class="control-group">
+                    <div class="control-title">📈 測量項目</div>
+                    <div class="control-buttons" id="measurementButtons">
+                        <!-- Will be populated by JavaScript -->
+                    </div>
+                </div>
+            </div>
+
+            <div class="chart-container">
+                <h3 style="margin-bottom: 8px; color: #2d3748; font-size: 1.25rem;" id="controlChartTitle">
+                    永興一-動作時間 管制圖
+                </h3>
+                <canvas id="controlChart" class="chart-canvas"></canvas>
+                <div class="chart-info">
+                    <strong>管制界限說明:</strong> UCL/LCL 採用 ±3σ 計算，紅色虛線為管制界限，藍色實線為中心線。<span id="phaseInfo">紅色標記點為異常值，建議檢查斷路器動作機構。</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Histogram Section -->
+        <div id="histogram" class="content-section">
+            <div class="control-panel">
+                <div class="control-group">
+                    <div class="control-title">🏭 選擇專案</div>
+                    <div class="control-buttons" id="histogramProjectButtons">
+                        <!-- Will be populated by JavaScript -->
+                    </div>
+                </div>
+                
+                <div class="control-group">
+                    <div class="control-title">⚡ 操作類型</div>
+                    <div class="control-buttons" id="histogramOperationButtons">
+                        <!-- Will be populated by JavaScript -->
+                    </div>
+                </div>
+                
+                <div class="control-group">
+                    <div class="control-title">📊 群組選擇</div>
+                    <div class="control-buttons" id="histogramGroupButtons">
+                        <!-- Will be populated by JavaScript -->
+                    </div>
+                </div>
+                
+                <div class="control-group">
+                    <div class="control-title">📈 測量項目</div>
+                    <div class="control-buttons" id="histogramMeasurementButtons">
+                        <!-- Will be populated by JavaScript -->
+                    </div>
+                </div>
+            </div>
+
+            <div class="chart-container">
+                <h3 style="margin-bottom: 8px; color: #2d3748; font-size: 1.25rem;" id="histogramTitle">
+                    動作時間分布直方圖 - 永興一-actionTime
+                </h3>
+                <canvas id="histogramChart" class="chart-canvas"></canvas>
+                <div class="chart-info">
+                    <strong>分布分析:</strong> <span id="histogramPhaseInfo">顯示各測量項目數據分布形狀，投入操作可能出現明顯的偏態分布，反映異常值的存在。</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Scatter Plot Section -->
+        <div id="scatter" class="content-section">
+            <div class="control-panel">
+                <div class="control-group">
+                    <div class="control-title">🏭 選擇專案</div>
+                    <div class="control-buttons" id="scatterProjectButtons">
+                        <!-- Will be populated by JavaScript -->
+                    </div>
+                </div>
+                
+                <div class="control-group">
+                    <div class="control-title">⚡ 操作類型</div>
+                    <div class="control-buttons" id="scatterOperationButtons">
+                        <!-- Will be populated by JavaScript -->
+                    </div>
+                </div>
+                
+                <div class="control-group">
+                    <div class="control-title">📊 群組選擇</div>
+                    <div class="control-buttons" id="scatterGroupButtons">
+                        <!-- Will be populated by JavaScript -->
+                    </div>
+                </div>
+                
+                <div class="control-group">
+                    <div class="control-title">📈 X軸測量項目</div>
+                    <div class="control-buttons" id="scatterXMeasurementButtons">
+                        <!-- Will be populated by JavaScript -->
+                    </div>
+                </div>
+                
+                <div class="control-group">
+                    <div class="control-title">📈 Y軸測量項目</div>
+                    <div class="control-buttons" id="scatterYMeasurementButtons">
+                        <!-- Will be populated by JavaScript -->
+                    </div>
+                </div>
+            </div>
+
+            <div class="chart-container">
+                <h3 style="margin-bottom: 8px; color: #2d3748; font-size: 1.25rem;" id="scatterTitle">動作時間 vs 速度 散布圖分析</h3>
+                <canvas id="scatterChart" class="chart-canvas"></canvas>
+                <div class="chart-info">
+                    <strong>測量項目關聯分析:</strong> <span id="scatterPhaseInfo">觀察不同測量項目間的相關性，特別注意異常值在各專案中的分布模式。</span>
+                </div>
+            </div>
+
+            <div class="stats-grid">
+                <div class="stats-card warning">
+                    <div class="stats-title">相關性分析</div>
+                    <div class="stats-value" style="color: #e53e3e;" id="correlationValue">0.85</div>
+                    <div class="stats-subtitle">測量項目相關係數</div>
+                    <div class="stats-details" id="consistencyDetails">
+                        • 動作時間與速度相關性: 0.85<br>
+                        • 投入操作異常集中: 彰埤一<br>
+                        • 系統性問題確認: 是<br>
+                        • 建議: 機構設計檢討
+                    </div>
+                </div>
+                
+                <div class="stats-card critical">
+                    <div class="stats-title">品質風險評估</div>
+                    <div class="stats-value" style="color: #e53e3e;" id="riskLevel">中風險</div>
+                    <div class="stats-subtitle">斷路器動作風險</div>
+                    <div class="stats-details" id="riskDetails">
+                        • 影響專案數量: 3 個<br>
+                        • 潛在影響範圍: 投入操作<br>
+                        • 建議行動: 檢查動作機構<br>
+                        • 客戶通報: 建議主動告知
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Fishbone Diagram Section -->
+        <div id="fishbone" class="content-section">
+            <div class="card">
+                <h3 class="section-title">🐟 特性要因圖 (魚骨圖) - 斷路器動作特性異常原因分析</h3>
+                
+                <div style="background: rgba(229, 62, 62, 0.1); border-left: 4px solid #e53e3e; padding: 20px; border-radius: 8px; margin-bottom: 24px;">
+                    <h4 style="color: #e53e3e; margin-bottom: 12px;">⚠️ 問題描述</h4>
+                    <p style="font-size: 0.875rem; color: #7f1d1d;">
+                        斷路器動作特性試驗中發現多項異常，包括投入操作時間超出標準、速度異常、動作時間接近上限等。這些異常主要集中在特定專案，表明可能存在設計或製造層面的系統性問題。
+                    </p>
+                </div>
+
+                <!-- Cause Categories -->
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 24px;">
+                    <div style="background: rgba(229, 62, 62, 0.1); border-left: 4px solid #e53e3e; padding: 20px; border-radius: 8px;">
+                        <h4 style="color: #e53e3e; margin-bottom: 12px;">🔧 設計因素 (Design)</h4>
+                        <ul style="font-size: 0.875rem; line-height: 1.6; margin-left: 16px;">
+                            <li><strong>動作機構設計不良:</strong> 動作機構幾何結構問題</li>
+                            <li><strong>彈簧規格選擇錯誤:</strong> 動作彈簧參數不當</li>
+                            <li><strong>公差設計過緊:</strong> 製造公差與設計不匹配</li>
+                            <li><strong>潤滑設計不足:</strong> 動作機構潤滑考量不足</li>
+                            <li><strong>負載分佈不均:</strong> 動作力分佈設計缺陷</li>
+                        </ul>
+                    </div>
+                    
+                    <div style="background: rgba(214, 158, 46, 0.1); border-left: 4px solid #d69e2e; padding: 20px; border-radius: 8px;">
+                        <h4 style="color: #d69e2e; margin-bottom: 12px;">🏭 製程因素 (Process)</h4>
+                        <ul style="font-size: 0.875rem; line-height: 1.6; margin-left: 16px;">
+                            <li><strong>生產批次問題:</strong> 特定批次動作機構缺陷</li>
+                            <li><strong>組裝參數設定錯誤:</strong> 動作機構組裝參數未優化</li>
+                            <li><strong>品質檢驗漏洞:</strong> 動作特性檢驗標準不足</li>
+                            <li><strong>供應商品質問題:</strong> 動作機構供應商缺陷</li>
+                            <li><strong>製程能力不足:</strong> 動作機構製程穩定性差</li>
+                        </ul>
+                    </div>
+                    
+                    <div style="background: rgba(102, 126, 234, 0.1); border-left: 4px solid #667eea; padding: 20px; border-radius: 8px;">
+                        <h4 style="color: #667eea; margin-bottom: 12px;">🔬 測量因素 (Measurement)</h4>
+                        <ul style="font-size: 0.875rem; line-height: 1.6; margin-left: 16px;">
+                            <li><strong>測量設備系統偏差:</strong> 動作特性測量儀器校準問題</li>
+                            <li><strong>測試程序設計缺陷:</strong> 動作特性測試方法不當</li>
+                            <li><strong>測量環境影響:</strong> 環境對動作特性測量影響大</li>
+                            <li><strong>測量時機問題:</strong> 測量時機選擇不當</li>
+                            <li><strong>重現性問題:</strong> 動作特性測量結果不穩定</li>
+                        </ul>
+                    </div>
+                    
+                    <div style="background: rgba(56, 161, 105, 0.1); border-left: 4px solid #38a169; padding: 20px; border-radius: 8px;">
+                        <h4 style="color: #38a169; margin-bottom: 12px;">👥 人員因素 (Man)</h4>
+                        <ul style="font-size: 0.875rem; line-height: 1.6; margin-left: 16px;">
+                            <li><strong>設計審查不足:</strong> 動作機構設計審查流程缺失</li>
+                            <li><strong>經驗不足:</strong> 動作機構相關技術經驗缺乏</li>
+                            <li><strong>培訓不足:</strong> 動作特性專門知識培訓不足</li>
+                            <li><strong>溝通協調問題:</strong> 跨部門動作特性資訊不同步</li>
+                            <li><strong>標準化不足:</strong> 動作特性作業標準不統一</li>
+                        </ul>
+                    </div>
+                    
+                    <div style="background: rgba(128, 90, 213, 0.1); border-left: 4px solid #805ad5; padding: 20px; border-radius: 8px;">
+                        <h4 style="color: #805ad5; margin-bottom: 12px;">🏭 環境因素 (Environment)</h4>
+                        <ul style="font-size: 0.875rem; line-height: 1.6; margin-left: 16px;">
+                            <li><strong>使用環境差異:</strong> 斷路器在不同環境表現不同</li>
+                            <li><strong>儲存條件影響:</strong> 動作機構對儲存環境敏感</li>
+                            <li><strong>運輸過程損傷:</strong> 動作機構在運輸中易受損</li>
+                            <li><strong>安裝環境因素:</strong> 安裝環境對動作特性影響大</li>
+                            <li><strong>老化速度差異:</strong> 動作機構老化速度不一致</li>
+                        </ul>
+                    </div>
+                    
+                    <div style="background: rgba(237, 137, 54, 0.1); border-left: 4px solid #ed8936; padding: 20px; border-radius: 8px;">
+                        <h4 style="color: #ed8936; margin-bottom: 12px;">🧪 材料因素 (Material)</h4>
+                        <ul style="font-size: 0.875rem; line-height: 1.6; margin-left: 16px;">
+                            <li><strong>材料成分問題:</strong> 動作機構材料成分與規格不符</li>
+                            <li><strong>材料來源問題:</strong> 動作機構材料供應商品質不穩</li>
+                            <li><strong>材料相容性問題:</strong> 動作機構與其他材料不相容</li>
+                            <li><strong>材料老化問題:</strong> 動作機構材料易老化變質</li>
+                            <li><strong>材料批次差異:</strong> 不同批次動作機構材料差異大</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Action Plan -->
+                <div style="background: linear-gradient(135deg, #667eea, #764ba2); color: white; padding: 24px; border-radius: 16px; margin-top: 24px;">
+                    <h4 style="margin-bottom: 16px;">🎯 斷路器動作特性改善行動計畫</h4>
+                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 16px; font-size: 0.875rem;">
+                        <div>
+                            <strong>緊急處理 (立即):</strong><br>
+                            • 暫停彰埤一異常斷路器使用<br>
+                            • 隔離松湖速度異常設備<br>
+                            • 檢查動作機構設計<br>
+                            • 比對各專案異常一致性
+                        </div>
+                        <div>
+                            <strong>根因分析 (1週內):</strong><br>
+                            • 動作機構設計規格檢討<br>
+                            • 生產批次追溯<br>
+                            • 材料供應商調查<br>
+                            • 系統性設計缺陷確認
+                        </div>
+                        <div>
+                            <strong>設計改善 (1個月):</strong><br>
+                            • 動作機構設計重新評估<br>
+                            • 材料規格升級<br>
+                            • 組裝參數優化<br>
+                            • 預防性維護制度
+                        </div>
+                        <div>
+                            <strong>系統升級 (3個月):</strong><br>
+                            • 新動作特性標準建立<br>
+                            • 全面品質重檢<br>
+                            • 自動化檢測導入<br>
+                            • 持續監控機制
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Pareto Chart Section -->
+        <div id="pareto" class="content-section">
+            <div class="chart-container">
+                <h3 style="margin-bottom: 8px; color: #2d3748; font-size: 1.25rem;">柏拉圖 - 斷路器動作特性異常原因分析</h3>
+                <canvas id="paretoChart" class="chart-canvas"></canvas>
+                <div class="chart-info">
+                    <strong>80-20 原則:</strong> 柏拉圖幫助識別造成 80% 問題的 20% 關鍵原因。當前數據顯示投入操作異常是最主要原因。
+                </div>
+            </div>
+            
+            <div class="stats-grid">
+                <div class="stats-card critical">
+                    <div class="stats-title">主要異常原因</div>
+                    <div class="stats-value" style="color: #e53e3e;">投入操作異常</div>
+                    <div class="stats-subtitle">佔異常的30%</div>
+                    <div class="stats-details">
+                        • 投入操作時間異常: 3個<br>
+                        • 主要集中在彰埤一<br>
+                        • 超出38ms標準<br>
+                        • 建議檢查動作機構
+                    </div>
+                </div>
+                
+                <div class="stats-card warning">
+                    <div class="stats-title">影響範圍</div>
+                    <div class="stats-value" style="color: #d69e2e;">多專案</div>
+                    <div class="stats-subtitle">系統性影響評估</div>
+                    <div class="stats-details">
+                        • 受影響專案: 3個<br>
+                        • 受影響測量項目: 2個<br>
+                        • 潛在影響產品: 部分斷路器<br>
+                        • 風險等級: 中
+                    </div>
+                </div>
+                
+                <div class="stats-card excellent">
+                    <div class="stats-title">改善優先順序</div>
+                    <div class="stats-value" style="color: #38a169;">機構先行</div>
+                    <div class="stats-subtitle">建議處理順序</div>
+                    <div class="stats-details">
+                        1. 動作機構設計全面檢討<br>
+                        2. 材料規格重新評估<br>
+                        3. 組裝參數重新調整<br>
+                        4. 建立專用動作特性標準
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Statistics Section -->
+        <div id="statistics" class="content-section">
+            <div class="card">
+                <h3 class="section-title">📊 統計分析詳細報告 (斷路器動作特性試驗)</h3>
+                
+                <!-- 測量項目統計比較分析 -->
+                <div style="background: rgba(56, 161, 105, 0.1); border-left: 4px solid #38a169; padding: 24px; border-radius: 8px; margin-bottom: 24px;">
+                    <h4 style="color: #38a169; margin-bottom: 16px;">測量項目統計比較分析 (7個專案完整數據)</h4>
+                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 16px; font-size: 0.875rem;">
+                        <div>
+                            <strong style="color: #e53e3e;">動作時間統計 (整體):</strong><br>
+                            平均Cpk: 2.1 (良好)<br>
+                            標準範圍: 85~120ms<br>
+                            異常率: 2.3%<br>
+                            主要問題: 接近上限
+                        </div>
+                        <div>
+                            <strong style="color: #38a169;">三相相差時間統計 (整體):</strong><br>
+                            平均Cpk: 3.2 (優良)<br>
+                            標準範圍: 0~2ms<br>
+                            異常率: 0%<br>
+                            狀態: 完全正常
+                        </div>
+                        <div>
+                            <strong style="color: #3182ce;">速度統計 (整體):</strong><br>
+                            平均Cpk: 1.9 (可接受)<br>
+                            標準範圍: 2.0~2.6m/s<br>
+                            異常率: 3.3%<br>
+                            主要問題: 接近下限
+                        </div>
+                        <div>
+                            <strong>投入操作統計 (整體):</strong><br>
+                            平均Cpk: 0.8 (急需改善)<br>
+                            標準範圍: 8.33~38ms<br>
+                            異常率: 16.4%<br>
+                            主要問題: 超出上限
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Detailed Statistics Table -->
+                <table class="data-table" id="statisticsTable">
+                    <thead>
+                        <tr>
+                            <th>專案</th>
+                            <th>測量項目</th>
+                            <th>樣本數 (n)</th>
+                            <th>平均值 (μ)</th>
+                            <th>標準差 (σ)</th>
+                            <th>變異係數 (CV%)</th>
+                            <th>異常值數量</th>
+                            <th>Cp</th>
+                            <th>Cpk</th>
+                            <th>製程等級</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <!-- Data will be populated by JavaScript -->
+                    </tbody>
+                </table>
+            </div>
+            
+            <!-- 測量項目比較分析 -->
+            <div class="stats-grid">
+                <div class="stats-card good">
+                    <div class="stats-title">動作時間能力分析</div>
+                    <div class="stats-value" style="color: #e53e3e;">A級</div>
+                    <div class="stats-subtitle">製程能力良好</div>
+                    <div class="stats-details">
+                        • 平均Cpk: 2.1<br>
+                        • 變異係數: 2.1%<br>
+                        • 異常率: 2.3%<br>
+                        • 專案一致性: 85%<br>
+                        • 狀態: 穩定可控
+                    </div>
+                </div>
+                
+                <div class="stats-card critical">
+                    <div class="stats-title">投入操作能力分析</div>
+                    <div class="stats-value" style="color: #e53e3e;">F級</div>
+                    <div class="stats-subtitle">製程能力不可接受</div>
+                    <div class="stats-details">
+                        • 平均Cpk: 0.8<br>
+                        • 變異係數: 25.6%<br>
+                        • 異常率: 16.4%<br>
+                        • 專案一致性: 60%<br>
+                        • 狀態: 急需改善
+                    </div>
+                </div>
+                
+                <div class="stats-card excellent">
+                    <div class="stats-title">三相相差時間能力分析</div>
+                    <div class="stats-value" style="color: #38a169;">A級</div>
+                    <div class="stats-subtitle">製程能力優良</div>
+                    <div class="stats-details">
+                        • 平均Cpk: 3.2<br>
+                        • 變異係數: 1.8%<br>
+                        • 異常率: 0%<br>
+                        • 專案一致性: 100%<br>
+                        • 狀態: 完全正常
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+
+    <button id="backToTop" class="back-to-top" type="button" aria-label="回到頂端" title="回到頂端">↑</button>
+</body>
+</html>
