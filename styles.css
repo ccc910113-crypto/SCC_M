@@ -430,54 +430,197 @@ body {
     .nav-tabs { flex-direction: column; }
 }
 
-/* Dark Mode */
+/* Dark Mode - 優化對比度 */
 .dark body {
-    background: linear-gradient(135deg, #0f172a 0%, #111827 100%);
-    color: #e5e7eb;
+    background: linear-gradient(135deg, #0a0e1a 0%, #0f1419 100%);
+    color: #f8fafc;
 }
 
 .dark .header {
-    background: rgba(17, 24, 39, 0.9);
-    box-shadow: 0 8px 32px rgba(0,0,0,0.5);
+    background: rgba(15, 23, 42, 0.95);
+    box-shadow: 0 8px 32px rgba(0,0,0,0.6);
+    border-bottom: 1px solid rgba(255,255,255,0.1);
 }
 
-.dark .header-main p { color: #9ca3af; }
+.dark .header-main h1 {
+    background: linear-gradient(135deg, #60a5fa, #a78bfa);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
 
-.dark .nav-tabs { background: rgba(31,41,55,0.9); box-shadow: 0 8px 32px rgba(0,0,0,0.4); }
-.dark .nav-tab { color: #9ca3af; }
-.dark .nav-tab:hover { background: rgba(102,126,234,0.15); color: #93c5fd; }
+.dark .header-main p { 
+    color: #cbd5e1; 
+}
 
-.dark .card { background: rgba(17,24,39,0.9); border: 1px solid rgba(255,255,255,0.06); box-shadow: 0 8px 32px rgba(0,0,0,0.4); }
-.dark .section-title { color: #e5e7eb; }
+.dark .header-stat {
+    background: rgba(15, 23, 42, 0.8);
+    border: 1px solid rgba(255,255,255,0.1);
+    box-shadow: 0 4px 16px rgba(0,0,0,0.3);
+}
 
-.dark .control-group { background: rgba(31,41,55,0.9); }
-.dark .control-title { color: #e5e7eb; }
-.dark .control-btn { background: #111827; border-color: #374151; color: #d1d5db; }
-.dark .control-btn:hover { border-color: #93c5fd; color: #93c5fd; }
+.dark .header-stat-value {
+    color: #60a5fa;
+}
 
-.dark .chart-container { background: rgba(17,24,39,0.9); box-shadow: 0 8px 32px rgba(0,0,0,0.4); }
-.dark .chart-info { background: rgba(59,130,246,0.12); color: #d1d5db; border-left-color: #60a5fa; }
+.dark .header-stat-label {
+    color: #94a3b8;
+}
 
-.dark .stats-card { background: rgba(31,41,55,0.9); box-shadow: 0 8px 32px rgba(0,0,0,0.35); }
-.dark .stats-title { color: #e5e7eb; }
-.dark .stats-details { color: #d1d5db; }
+.dark .nav-tabs { 
+    background: rgba(30, 41, 59, 0.95); 
+    box-shadow: 0 8px 32px rgba(0,0,0,0.5);
+    border: 1px solid rgba(255,255,255,0.1);
+}
+.dark .nav-tab { 
+    color: #cbd5e1; 
+}
+.dark .nav-tab:hover { 
+    background: rgba(96, 165, 250, 0.2); 
+    color: #60a5fa; 
+}
+.dark .nav-tab.active {
+    background: linear-gradient(135deg, #3b82f6, #8b5cf6);
+    color: #ffffff;
+    box-shadow: 0 4px 15px rgba(59, 130, 246, 0.4);
+}
 
-.dark .data-table { background: #0b1220; box-shadow: 0 8px 32px rgba(0,0,0,0.4); }
-.dark .data-table th { background: linear-gradient(135deg, #0b1220, #1f2937); }
-.dark .data-table td { border-bottom-color: #1f2937; color: #d1d5db; }
-.dark .data-table tbody tr:hover { background-color: rgba(59,130,246,0.08); }
+.dark .card { 
+    background: rgba(15, 23, 42, 0.95); 
+    border: 1px solid rgba(255,255,255,0.15); 
+    box-shadow: 0 8px 32px rgba(0,0,0,0.5);
+}
+.dark .section-title { 
+    color: #f1f5f9; 
+}
 
-.dark .system-alert { box-shadow: 0 8px 32px rgba(229,62,62,0.25); }
+.dark .control-group { 
+    background: rgba(30, 41, 59, 0.95); 
+    border: 1px solid rgba(255,255,255,0.1);
+}
+.dark .control-title { 
+    color: #f1f5f9; 
+}
+.dark .control-btn { 
+    background: rgba(15, 23, 42, 0.8); 
+    border-color: rgba(255,255,255,0.2); 
+    color: #e2e8f0; 
+}
+.dark .control-btn:hover { 
+    border-color: #60a5fa; 
+    color: #60a5fa; 
+    background: rgba(96, 165, 250, 0.1);
+}
+.dark .control-btn.active {
+    background: rgba(59, 130, 246, 0.2);
+    border-color: #3b82f6;
+    color: #60a5fa;
+}
+
+.dark .chart-container { 
+    background: rgba(15, 23, 42, 0.95); 
+    box-shadow: 0 8px 32px rgba(0,0,0,0.5);
+    border: 1px solid rgba(255,255,255,0.1);
+}
+.dark .chart-info { 
+    background: rgba(59, 130, 246, 0.15); 
+    color: #e2e8f0; 
+    border-left-color: #60a5fa; 
+    border: 1px solid rgba(96, 165, 250, 0.2);
+}
+
+.dark .stats-card { 
+    background: rgba(30, 41, 59, 0.95); 
+    box-shadow: 0 8px 32px rgba(0,0,0,0.4);
+    border: 1px solid rgba(255,255,255,0.1);
+}
+.dark .stats-title { 
+    color: #f1f5f9; 
+}
+.dark .stats-details { 
+    color: #cbd5e1; 
+}
+
+.dark .data-table { 
+    background: rgba(15, 23, 42, 0.95); 
+    box-shadow: 0 8px 32px rgba(0,0,0,0.5);
+    border: 1px solid rgba(255,255,255,0.1);
+}
+.dark .data-table th { 
+    background: linear-gradient(135deg, #1e293b, #334155); 
+    color: #f1f5f9;
+    border-bottom: 2px solid rgba(96, 165, 250, 0.3);
+}
+.dark .data-table td { 
+    border-bottom-color: rgba(255,255,255,0.1); 
+    color: #e2e8f0; 
+}
+.dark .data-table tbody tr:hover { 
+    background-color: rgba(59, 130, 246, 0.1); 
+}
+.dark .data-table tbody tr:nth-child(even) {
+    background-color: rgba(30, 41, 59, 0.3);
+}
+
+.dark .system-alert { 
+    background: linear-gradient(135deg, #dc2626, #b91c1c);
+    box-shadow: 0 8px 32px rgba(220, 38, 38, 0.4);
+    border: 1px solid rgba(239, 68, 68, 0.3);
+}
+
+/* 狀態指示器優化 */
+.dark .status-excellent { color: #10b981; font-weight: 700; }
+.dark .status-good { color: #3b82f6; font-weight: 700; }
+.dark .status-warning { color: #f59e0b; font-weight: 700; }
+.dark .status-critical { color: #ef4444; font-weight: 700; }
 
 /* Dark mode: chart titles match stats title color */
 .dark #controlChartTitle,
 .dark #histogramTitle,
 .dark #scatterTitle,
 .dark #pareto h3 {
-    color: #e5e7eb !important;
+    color: #f1f5f9 !important;
 }
 
 /* Dark mode: Fishbone 問題描述段落顏色與標題一致 */
 .dark #fishbone p[style*="#7f1d1d"] {
-    color: #e53e3e !important;
+    color: #f87171 !important;
+}
+
+/* Dark mode: 訊號線安裝手法說明文字顏色優化 */
+.dark div[style*="color: #1a365d"] {
+    color: #e2e8f0 !important;
+}
+
+.dark div[style*="color: #1a365d"] strong {
+    color: #60a5fa !important;
+}
+
+/* Dark mode: 品質狀況描述段落文字顏色優化 */
+.dark p[style*="color: #1a365d"] {
+    color: #e2e8f0 !important;
+}
+
+/* 深色模式下的額外優化 */
+.dark .header-stats {
+    gap: 16px;
+}
+
+.dark .header-stat {
+    transition: all 0.3s ease;
+}
+
+.dark .header-stat:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 24px rgba(0,0,0,0.4);
+}
+
+/* 深色模式下的按鈕和互動元素 */
+.dark .control-btn:focus {
+    outline: 2px solid #60a5fa;
+    outline-offset: 2px;
+}
+
+.dark .nav-tab:focus {
+    outline: 2px solid #60a5fa;
+    outline-offset: 2px;
 }
