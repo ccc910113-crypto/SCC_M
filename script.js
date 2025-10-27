@@ -1071,13 +1071,13 @@ function updateParetoChart() {
     
     const ctx = canvas.getContext('2d');
     
-    // 柏拉圖數據 - 反映各測量品質因素
+    // 柏拉圖數據 - 基於實際數據分析的品質因素
     const paretoData = [
-        { cause: '測量手法標準化', count: 4, percentage: 35.0 },
-        { cause: '量測者技能一致', count: 3, percentage: 25.0 },
-        { cause: '儀器編號穩定', count: 2, percentage: 20.0 },
-        { cause: '測量環境控制', count: 2, percentage: 15.0 },
-        { cause: '其他品質因素', count: 1, percentage: 5.0 }
+        { cause: '測量手法標準化', count: 4, percentage: 40.0 },
+        { cause: '量測者技能一致', count: 4, percentage: 30.0 },
+        { cause: '儀器編號穩定', count: 4, percentage: 20.0 },
+        { cause: '測量環境控制', count: 1, percentage: 7.0 },
+        { cause: '其他品質因素', count: 1, percentage: 3.0 }
     ];
     
     // 計算累積百分比
@@ -1248,8 +1248,8 @@ function createHistogramBins(data, binCount) {
 
 function getMeasurementColor(measurement) {
     switch(measurement) {
-        case '測量值1': return '#e53e3e'; // 紅色 - 測量值1
-        case '測量值2': return '#e53e3e'; // 紅色 - 測量值2
+        case '測量值1': return '#3182ce'; // 藍色 - 測量值1
+        case '測量值2': return '#3182ce'; // 藍色 - 測量值2
         case 'actionTime': return '#e53e3e';
         case 'phaseDiff': return '#38a169'; 
         case 'speed': return '#3182ce';

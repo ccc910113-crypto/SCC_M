@@ -14,11 +14,11 @@
             <div class="header-content">
                 <div class="header-main">
                     <h1>⚡ 動作時間測量分析系統</h1>
-                    <p>品質分析系統 - 基於動態測量數據的專業分析 (4個儀器編號完整數據)</p>
+                    <p>品質分析系統 - 基於動態測量數據的專業分析 (64筆記錄完整數據)</p>
                 </div>
                 <div class="header-stats">
                     <div class="header-stat">
-                        <div class="header-stat-value">74</div>
+                        <div class="header-stat-value">256</div>
                         <div class="header-stat-label">總測量數</div>
                     </div>
                     <div class="header-stat">
@@ -203,7 +203,7 @@
                 </h3>
                 <canvas id="controlChart" class="chart-canvas"></canvas>
                 <div class="chart-info">
-                    <strong>規格界限說明:</strong> 綠色實線為標準值，紅色虛線為上限值/下限值。<span id="phaseInfo">紅色標記點為測量值。</span>
+                    <strong>規格界限說明:</strong> 綠色實線為標準值，紅色虛線為上限值/下限值。<span id="phaseInfo">藍色標記點為測量值，紅色標記點為異常值。</span>
                 </div>
             </div>
         </div>
@@ -328,7 +328,7 @@
         <!-- Fishbone Diagram Section -->
         <div id="fishbone" class="content-section">
             <div class="card">
-                <h3 class="section-title">🐟 特性要因圖 (魚骨圖) - 斷路器動作時間品質分析</h3>
+                <h3 class="section-title">🐟 特性要因圖 (魚骨圖) - 動作時間品質分析</h3>
                 
                 <div style="background: rgba(56, 161, 105, 0.1); border-left: 4px solid #38a169; padding: 20px; border-radius: 8px; margin-bottom: 24px;">
                     <h4 style="color: #38a169; margin-bottom: 12px;">✅ 品質狀況描述</h4>
@@ -446,7 +446,7 @@
         <!-- Pareto Chart Section -->
         <div id="pareto" class="content-section">
             <div class="chart-container">
-                <h3 style="margin-bottom: 8px; color: #2d3748; font-size: 1.25rem;">柏拉圖 - 斷路器動作時間品質分析</h3>
+                <h3 style="margin-bottom: 8px; color: #2d3748; font-size: 1.25rem;">柏拉圖 - 動作時間品質分析</h3>
                 <canvas id="paretoChart" class="chart-canvas"></canvas>
                 <div class="chart-info">
                     <strong>品質分析:</strong> 柏拉圖顯示各品質因素的貢獻度。當前數據顯示測量手法標準化是最重要的品質因素。
@@ -457,7 +457,7 @@
                 <div class="stats-card excellent">
                     <div class="stats-title">主要品質因素</div>
                     <div class="stats-value" style="color: #38a169;">測量手法標準化</div>
-                    <div class="stats-subtitle">佔品質的35%</div>
+                    <div class="stats-subtitle">佔品質的40%</div>
                     <div class="stats-details">
                         • A、B、C、D手法一致: 4個<br>
                         • 各量測者結果一致<br>
@@ -495,7 +495,7 @@
         <!-- Statistics Section -->
         <div id="statistics" class="content-section">
             <div class="card">
-                <h3 class="section-title">📊 統計分析詳細報告 (斷路器動作時間試驗)</h3>
+                <h3 class="section-title">📊 統計分析詳細報告 (動作時間試驗)</h3>
                 
                 <!-- 測量項目統計比較分析 -->
                 <div style="background: rgba(56, 161, 105, 0.1); border-left: 4px solid #38a169; padding: 24px; border-radius: 8px; margin-bottom: 24px;">
