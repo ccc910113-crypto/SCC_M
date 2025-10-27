@@ -1073,11 +1073,11 @@ function updateParetoChart() {
     
     // 柏拉圖數據 - 基於實際數據分析的品質因素
     const paretoData = [
-        { cause: '測量手法標準化', count: 4, percentage: 40.0 },
-        { cause: '量測者技能一致', count: 4, percentage: 30.0 },
-        { cause: '儀器編號穩定', count: 4, percentage: 20.0 },
-        { cause: '測量環境控制', count: 1, percentage: 7.0 },
-        { cause: '其他品質因素', count: 1, percentage: 3.0 }
+        { cause: '測量手法標準化', count: 4, percentage: 40.0, reason: '4個手法皆表現良好（A、B、C、D）' },
+        { cause: '量測者技能一致', count: 4, percentage: 30.0, reason: '4位量測者皆表現良好（涂X騰、余O濤、洪O祥、游X潔）' },
+        { cause: '儀器編號穩定', count: 4, percentage: 20.0, reason: '4個儀器皆表現良好（20240304A、20240304B、20240304C、20250224A）' },
+        { cause: '測量環境控制', count: 1, percentage: 7.0, reason: '1個組裝廠別環境控制良好（精裝A）' },
+        { cause: '其他品質因素', count: 1, percentage: 3.0, reason: '其他細微品質因素控制良好' }
     ];
     
     // 計算累積百分比
@@ -1090,7 +1090,7 @@ function updateParetoChart() {
     paretoChart = new Chart(ctx, {
         type: 'bar',
         data: {
-            labels: paretoData.map(item => item.cause),
+            labels: paretoData.map(item => `${item.cause}\n${item.reason}`),
             datasets: [
                 {
                     type: 'bar',
@@ -1140,9 +1140,13 @@ function updateParetoChart() {
                         color: axisTitleColor
                     },
                     ticks: {
-                        maxRotation: 45,
-                        font: { size: 10 },
-                        color: axisTitleColor
+                        maxRotation: 0,
+                        font: { size: 9 },
+                        color: axisTitleColor,
+                        callback: function(value, index) {
+                            const item = paretoData[index];
+                            return [`${item.cause}`, `${item.reason}`];
+                        }
                     }
                 },
                 y: {
