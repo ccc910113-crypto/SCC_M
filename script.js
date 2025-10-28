@@ -1730,8 +1730,6 @@ document.addEventListener('DOMContentLoaded', function() {
     // 深色模式切換與持久化
     const themeToggleBtn = document.getElementById('themeToggle');
     const rootHtml = document.documentElement;
-
-    const prefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
     const savedTheme = localStorage.getItem('theme');
 
     const applyTheme = (mode) => {
@@ -1750,16 +1748,8 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     };
 
-    // 初始主題：以 localStorage 優先，否則依系統偏好
-    applyTheme(savedTheme ? savedTheme : (prefersDark ? 'dark' : 'light'));
-
-    // 系統偏好變化時同步（若未手動設定）
-    if (!savedTheme && window.matchMedia) {
-        const mq = window.matchMedia('(prefers-color-scheme: dark)');
-        mq.addEventListener('change', (e) => {
-            applyTheme(e.matches ? 'dark' : 'light');
-        });
-    }
+    // 初始主題：以 localStorage 優先，否則預設為淺色模式
+    applyTheme(savedTheme ? savedTheme : 'light');
 
     // 切換點擊
     if (themeToggleBtn) {
