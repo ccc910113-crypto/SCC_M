@@ -46,17 +46,21 @@ body {
     margin-bottom: 8px;
 }
 
-/* 漏斗符號自定義樣式 */
+/* 漏斗符號自定義樣式 - 使用SVG背景 */
 .header-main h1::before {
-    content: "⌛";
+    content: "";
     display: inline-block;
+    width: 2.5rem;
+    height: 2.5rem;
     margin-right: 8px;
-    font-size: 2.5rem;
-    background: linear-gradient(135deg, #8B4513, #A0522D);
-    background-clip: text;
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
+    background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><linearGradient id="brownGrad" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" style="stop-color:%238B4513;stop-opacity:1" /><stop offset="100%" style="stop-color:%23A0522D;stop-opacity:1" /></linearGradient></defs><path d="M 20 10 L 80 10 L 55 45 L 55 55 L 80 90 L 20 90 L 45 55 L 45 45 Z" fill="url(%23brownGrad)" stroke="%238B4513" stroke-width="2"/><ellipse cx="50" cy="10" rx="30" ry="6" fill="white" stroke="%238B4513" stroke-width="2"/><ellipse cx="50" cy="90" rx="30" ry="6" fill="url(%23brownGrad)" stroke="%238B4513" stroke-width="2"/><path d="M 45 45 L 45 55 L 55 55 L 55 45 Z" fill="white"/></svg>');
+    background-size: contain;
+    background-repeat: no-repeat;
+    background-position: center;
     filter: drop-shadow(1px 1px 2px rgba(139, 69, 19, 0.3));
+    vertical-align: baseline;
+    position: relative;
+    top: 0.1rem;
 }
 
 .header-main p {
