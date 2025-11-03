@@ -651,6 +651,20 @@ function updateControlChart() {
     // 創建標籤 - 儀器編號
     const labels = filteredData.map(record => record.儀器編號);
     
+    // 確保labels有值
+    if (labels.length === 0) {
+        console.error('No labels found!');
+        return;
+    }
+    
+    console.log('Control Chart Debug:', {
+        filteredDataLength: filteredData.length,
+        labels: labels,
+        labelsLength: labels.length,
+        measurement1Data: measurement1Data,
+        measurement2Data: measurement2Data
+    });
+    
     // 檢查異常值
     const checkOutlier = (value) => {
         if (!limits) return false;
@@ -668,18 +682,29 @@ function updateControlChart() {
     });
     
     // 計算標準值（規格中間值）
-    const standardValue = limits && limits.標準值上限 !== undefined && limits.標準值下限 !== undefined 
+    let standardValue = limits && limits.標準值上限 !== undefined && limits.標準值下限 !== undefined 
         ? (limits.標準值上限 + limits.標準值下限) / 2 
         : mean;
     
     // 計算上限值和下限值
-    const upperLimit = limits && limits.上限值 !== undefined ? limits.上限值 : (mean + stdDev * 3);
-    const lowerLimit = limits && limits.下限值 !== undefined ? limits.下限值 : (mean - stdDev * 3);
+    let upperLimit = limits && limits.上限值 !== undefined ? limits.上限值 : (mean + stdDev * 3);
+    let lowerLimit = limits && limits.下限值 !== undefined ? limits.下限值 : (mean - stdDev * 3);
     
-    // 計算Y軸範圍，確保包含所有數據點和線條
-    const allChartValues = [...measurement1Data, ...measurement2Data, standardValue, upperLimit, lowerLimit];
-    const yAxisMin = Math.min(...allChartValues) * 0.9; // 留10%的邊距
-    const yAxisMax = Math.max(...allChartValues) * 1.1; // 留10%的邊距
+    // 確保所有值都是有效數字
+    standardValue = isNaN(standardValue) || !isFinite(standardValue) ? mean : standardValue;
+    upperLimit = isNaN(upperLimit) || !isFinite(upperLimit) ? (mean + stdDev * 3) : upperLimit;
+    lowerLimit = isNaN(lowerLimit) || !isFinite(lowerLimit) ? (mean - stdDev * 3) : lowerLimit;
+    
+    // 設定Y軸範圍（固定範圍：閉合 85~120；開啟 26~33）
+    let yAxisMin;
+    let yAxisMax;
+    if (selectedOperation === '閉合') {
+        yAxisMin = 85;
+        yAxisMax = 120;
+    } else {
+        yAxisMin = 26;
+        yAxisMax = 33;
+    }
     
     console.log('Control Chart Limits:', {
         limits: limits,
@@ -687,66 +712,196 @@ function updateControlChart() {
         upperLimit: upperLimit,
         lowerLimit: lowerLimit,
         mean: mean,
+        labelsLength: labels.length,
         yAxisMin: yAxisMin,
         yAxisMax: yAxisMax
     });
     
+    // 創建標準值、上限值、下限值的數據數組（確保是純數字數組）
+    // 為了確保線條顯示，即使只有一個數據點，也要創建至少兩個點（開始和結束）
+    const standardValueNum = Number(standardValue);
+    const upperLimitNum = Number(upperLimit);
+    const lowerLimitNum = Number(lowerLimit);
+    
+    // 確保至少有兩個數據點，這樣Chart.js才能繪製線條
+    // 如果只有一個數據點，重複它；如果有多個，保持原樣
+    const dataPointCount = Math.max(labels.length, 2);
+    
+    const standardValueData = [];
+    const upperLimitData = [];
+    const lowerLimitData = [];
+    
+    for (let i = 0; i < dataPointCount; i++) {
+        standardValueData.push(standardValueNum);
+        upperLimitData.push(upperLimitNum);
+        lowerLimitData.push(lowerLimitNum);
+    }
+    
+    // 如果只有一個label，創建對應的擴展labels（開始和結束位置）
+    // 使用索引來區分，這樣Chart.js能正確繪製線條
+    let extendedLabels = [...labels];
+    if (labels.length === 1) {
+        // 單個數據點時，隱藏X軸兩個位置的文字標籤
+        extendedLabels = ['', ''];
+    }
+    
+    // 擴展測量值數據集以匹配labels長度（單點時僅保留兩個位置：一左一右，各自只有一個點）
+    const extendedMeasurement1Data = labels.length === 1 
+        ? [measurement1Data[0], null]
+        : measurement1Data;
+    const extendedMeasurement2Data = labels.length === 1
+        ? [null, measurement2Data[0]]
+        : measurement2Data;
+    
+    // 擴展點顏色數組（與數據對齊，null處使用透明避免顯示點）
+    const extendedPointColors1 = labels.length === 1
+        ? [pointColors1[0], 'transparent']
+        : pointColors1;
+    const extendedPointColors2 = labels.length === 1
+        ? ['transparent', pointColors2[0]]
+        : pointColors2;
+    
+    console.log('Limit Data Arrays:', {
+        labelsLength: labels.length,
+        extendedLabelsLength: extendedLabels.length,
+        labels: labels,
+        extendedLabels: extendedLabels,
+        standardValue: standardValue,
+        standardValueNum: standardValueNum,
+        upperLimit: upperLimit,
+        upperLimitNum: upperLimitNum,
+        lowerLimit: lowerLimit,
+        lowerLimitNum: lowerLimitNum,
+        dataPointCount: dataPointCount,
+        standardValueData: standardValueData,
+        upperLimitData: upperLimitData,
+        lowerLimitData: lowerLimitData,
+        standardValueDataLength: standardValueData.length,
+        upperLimitDataLength: upperLimitData.length,
+        lowerLimitDataLength: lowerLimitData.length,
+        standardValueDataValid: standardValueData.every(v => !isNaN(v) && isFinite(v)),
+        upperLimitDataValid: upperLimitData.every(v => !isNaN(v) && isFinite(v)),
+        lowerLimitDataValid: lowerLimitData.every(v => !isNaN(v) && isFinite(v)),
+        standardValueDataType: typeof standardValueData[0],
+        upperLimitDataType: typeof upperLimitData[0],
+        lowerLimitDataType: typeof lowerLimitData[0],
+        measurement1DataLength: measurement1Data.length,
+        extendedMeasurement1DataLength: extendedMeasurement1Data.length
+    });
+    
+    // 驗證數據數組是否正確
+    console.log('Data Array Validation:', {
+        standardValueDataIsArray: Array.isArray(standardValueData),
+        upperLimitDataIsArray: Array.isArray(upperLimitData),
+        lowerLimitDataIsArray: Array.isArray(lowerLimitData),
+        standardValueDataFirstElement: standardValueData[0],
+        upperLimitDataFirstElement: upperLimitData[0],
+        lowerLimitDataFirstElement: lowerLimitData[0]
+    });
+    
+    // 最終驗證
+    if (standardValueData.length === 0 || upperLimitData.length === 0 || lowerLimitData.length === 0) {
+        console.error('Data arrays have zero length!');
+        console.error('Labels length:', labels.length);
+        return;
+    }
+    
+    if (standardValueData.some(v => isNaN(v) || !isFinite(v))) {
+        console.error('Invalid values in standardValueData!', standardValueData);
+        return;
+    }
+    
+    if (upperLimitData.some(v => isNaN(v) || !isFinite(v))) {
+        console.error('Invalid values in upperLimitData!', upperLimitData);
+        return;
+    }
+    
+    if (lowerLimitData.some(v => isNaN(v) || !isFinite(v))) {
+        console.error('Invalid values in lowerLimitData!', lowerLimitData);
+        return;
+    }
+    
     controlChart = new Chart(ctx, {
         type: 'line',
         data: {
-            labels: labels,
+            labels: extendedLabels,
             datasets: [
                 {
-                    label: '測量值1',
-                    data: measurement1Data,
-                    borderColor: '#3182ce',
-                    backgroundColor: pointColors1.map(color => color + '40'),
-                    pointBackgroundColor: pointColors1,
-                    borderWidth: 2,
-                    pointRadius: 5,
-                    fill: false
-                },
-                {
-                    label: '測量值2',
-                    data: measurement2Data,
-                    borderColor: '#3182ce',
-                    backgroundColor: pointColors2.map(color => color + '40'),
-                    pointBackgroundColor: pointColors2,
-                    borderWidth: 2,
-                    pointRadius: 5,
-                    fill: false
-                },
-                {
                     label: '標準值',
-                    data: new Array(labels.length).fill(standardValue),
+                    data: standardValueData,
                     borderColor: '#10b981',
-                    borderWidth: 2,
+                    backgroundColor: 'transparent',
+                    borderWidth: 3,
                     pointRadius: 0,
                     pointHoverRadius: 0,
+                    pointBorderWidth: 0,
+                    pointBackgroundColor: 'transparent',
+                    pointStyle: false,
                     fill: false,
-                    tension: 0
+                    tension: 0,
+                    spanGaps: false,
+                    order: -3,
+                    hidden: false
                 },
                 {
                     label: '上限值',
-                    data: new Array(labels.length).fill(upperLimit),
+                    data: upperLimitData,
                     borderColor: '#ef4444',
+                    backgroundColor: 'transparent',
                     borderWidth: 2,
                     pointRadius: 0,
                     pointHoverRadius: 0,
+                    pointBorderWidth: 0,
+                    pointBackgroundColor: 'transparent',
+                    pointStyle: false,
                     fill: false,
                     borderDash: [10, 5],
-                    tension: 0
+                    tension: 0,
+                    spanGaps: false,
+                    order: -2,
+                    hidden: false
                 },
                 {
                     label: '下限值',
-                    data: new Array(labels.length).fill(lowerLimit),
+                    data: lowerLimitData,
                     borderColor: '#ef4444',
+                    backgroundColor: 'transparent',
                     borderWidth: 2,
                     pointRadius: 0,
                     pointHoverRadius: 0,
+                    pointBorderWidth: 0,
+                    pointBackgroundColor: 'transparent',
+                    pointStyle: false,
                     fill: false,
                     borderDash: [10, 5],
-                    tension: 0
+                    tension: 0,
+                    spanGaps: false,
+                    order: -2,
+                    hidden: false
+                },
+                {
+                    label: '測量值1',
+                    data: extendedMeasurement1Data,
+                    borderColor: '#3182ce',
+                    backgroundColor: extendedPointColors1.map(color => color + '40'),
+                    pointBackgroundColor: extendedPointColors1,
+                    borderWidth: 2,
+                    pointRadius: 5,
+                    fill: false,
+                    spanGaps: true,
+                    order: 0
+                },
+                {
+                    label: '測量值2',
+                    data: extendedMeasurement2Data,
+                    borderColor: '#3182ce',
+                    backgroundColor: extendedPointColors2.map(color => color + '40'),
+                    pointBackgroundColor: extendedPointColors2,
+                    borderWidth: 2,
+                    pointRadius: 5,
+                    fill: false,
+                    spanGaps: true,
+                    order: 0
                 }
             ]
         },
@@ -762,6 +917,28 @@ function updateControlChart() {
                         boxWidth: 12,
                         padding: 10,
                         font: { size: 11 }
+                    },
+                    onClick: function(e, legendItem) {
+                        // 防止隱藏標準值、上限值、下限值線
+                        const index = legendItem.datasetIndex;
+                        const chart = e.chart;
+                        const meta = chart.getDatasetMeta(index);
+                        const label = legendItem.text;
+                        
+                        // 如果是指定的線條，不允許隱藏
+                        if (label === '標準值' || label === '上限值' || label === '下限值') {
+                            return; // 不執行任何操作，防止隱藏
+                        }
+                        
+                        // 對於測量值，允許正常切換顯示/隱藏
+                        meta.hidden = meta.hidden === null ? !chart.data.datasets[index].hidden : null;
+                        chart.update();
+                    },
+                    onHover: function(e, legendItem) {
+                        // 標準值、上限值、下限值線的圖例項顯示為不可點擊
+                        if (legendItem.text === '標準值' || legendItem.text === '上限值' || legendItem.text === '下限值') {
+                            e.native.target.style.cursor = 'default';
+                        }
                     }
                 },
                 tooltip: {
@@ -770,10 +947,17 @@ function updateControlChart() {
                     bodyColor: '#4b5563',
                     borderColor: '#d1d5db',
                     borderWidth: 1,
+                    // 不顯示標準值/上下限線的提示
+                    filter: function(item) {
+                        const label = item.dataset?.label;
+                        return label !== '標準值' && label !== '上限值' && label !== '下限值';
+                    },
                     callbacks: {
                         title: function(tooltipItems) {
                             const index = tooltipItems[0].dataIndex;
-                            const instrument = filteredData[index].儀器編號;
+                            // 處理擴展labels的情況：如果只有一個數據點但擴展為兩個，取模運算
+                            const actualIndex = labels.length === 1 ? Math.min(index, filteredData.length - 1) : index;
+                            const instrument = filteredData[actualIndex] ? filteredData[actualIndex].儀器編號 : extendedLabels[index];
                             return `${instrument} - 手法${selectedMethod}`;
                         },
                         afterBody: function(tooltipItems) {
@@ -818,6 +1002,33 @@ function updateControlChart() {
             }
         }
     });
+    
+    // 驗證圖表是否正確創建，數據集是否正確添加
+    console.log('Chart Created:', {
+        chartExists: !!controlChart,
+        datasetsCount: controlChart?.data?.datasets?.length,
+        datasetLabels: controlChart?.data?.datasets?.map(d => d.label),
+        standardValueDataset: controlChart?.data?.datasets?.find(d => d.label === '標準值'),
+        upperLimitDataset: controlChart?.data?.datasets?.find(d => d.label === '上限值'),
+        lowerLimitDataset: controlChart?.data?.datasets?.find(d => d.label === '下限值'),
+        standardValueDatasetData: controlChart?.data?.datasets?.find(d => d.label === '標準值')?.data,
+        upperLimitDatasetData: controlChart?.data?.datasets?.find(d => d.label === '上限值')?.data,
+        lowerLimitDatasetData: controlChart?.data?.datasets?.find(d => d.label === '下限值')?.data
+    });
+    
+    // 檢查圖表元數據
+    if (controlChart) {
+        controlChart.data.datasets.forEach((dataset, index) => {
+            const meta = controlChart.getDatasetMeta(index);
+            console.log(`Dataset ${index} (${dataset.label}):`, {
+                hidden: meta.hidden,
+                type: meta.type,
+                data: dataset.data,
+                borderColor: dataset.borderColor,
+                borderWidth: dataset.borderWidth
+            });
+        });
+    }
 }
 
 function updateHistogram() {
