@@ -411,21 +411,21 @@ let currentSection = 'overview';
 let selectedProject = '20240304A';
 let selectedOperation = '閉合';
 let selectedMeasurer = '涂X騰'; // 預設量測者為涂X騰
-let selectedMeasurement = '測量值1';
+let selectedMethod = 'A';
 let selectedGroupKey = '20240304A-涂X騰-閉合';
 
 // 直方圖變數
 let selectedHistogramProject = '20240304A';
 let selectedHistogramOperation = '閉合';
 let selectedHistogramGroup = '涂X騰';
-let selectedHistogramMeasurement = '測量值1';
+let selectedHistogramMethod = 'A';
 
 // 散佈圖變數
-let selectedScatterProject = '20240304A';
+let selectedScatterProject = '全部';
 let selectedScatterOperation = '閉合';
-let selectedScatterGroup = '涂X騰';
-let selectedScatterX = '測量值1';
-let selectedScatterY = '測量值2';
+let selectedScatterGroup = '全部';
+let selectedScatterMethodX = 'A';
+let selectedScatterMethodY = 'B';
 
 const projects = ['20240304A', '20240304B', '20240304C', '20250224A'];
 const operations = ['閉合', '開啟'];
@@ -480,172 +480,84 @@ function showSection(sectionId) {
 
 function selectProject(project) {
     selectedProject = project;
-    // 檢查當前選擇的量測者是否在新專案中可用
-    const availableMeasurers = getAvailableMeasurers(project, selectedOperation);
-    // 如果當前量測者不可用，則嘗試使用涂X騰，如果涂X騰也不可用，則使用第一個可用的量測者
-    if (!availableMeasurers.includes(selectedMeasurer)) {
-        if (availableMeasurers.includes('涂X騰')) {
-            selectedMeasurer = '涂X騰';
-        } else if (availableMeasurers.length > 0) {
-            selectedMeasurer = availableMeasurers[0];
-        } else {
-            selectedMeasurer = null;
-        }
-    }
     updateActiveButtons('#projectButtons .control-btn', project);
-    initializeControls(); // 重新初始化控制面板
+    initializeControls(); // 重新初始化控制面板以更新可用的量測者選項
     updateControlChart();
 }
 
 function selectOperation(operation) {
     selectedOperation = operation;
-    // 檢查當前選擇的量測者是否在新操作中可用
-    const availableMeasurers = getAvailableMeasurers(selectedProject, operation);
-    // 如果當前量測者不可用，則嘗試使用涂X騰，如果涂X騰也不可用，則使用第一個可用的量測者
-    if (!availableMeasurers.includes(selectedMeasurer)) {
-        if (availableMeasurers.includes('涂X騰')) {
-            selectedMeasurer = '涂X騰';
-        } else if (availableMeasurers.length > 0) {
-            selectedMeasurer = availableMeasurers[0];
-        } else {
-            selectedMeasurer = null;
-        }
-    }
-    selectedMeasurement = '測量值1'; // 設定預設測量值
-    
     updateActiveButtons('#operationButtons .control-btn', operation);
-    initializeControls(); // 重新初始化控制面板
     updateControlChart();
 }
 
 function selectMeasurer(measurer) {
     selectedMeasurer = measurer;
-    selectedMeasurement = '測量值1'; // 設定預設測量值
-    
     updateActiveButtons('#groupButtons .control-btn', measurer);
-    initializeControls(); // 重新初始化控制面板
     updateControlChart();
 }
 
-function selectMeasurement(measurement) {
-    selectedMeasurement = measurement;
-    updateActiveButtons('#measurementButtons .control-btn', measurement);
+function selectMethod(method) {
+    selectedMethod = method;
+    updateActiveButtons('#measurementButtons .control-btn', method);
     updateControlChart();
 }
 
 // 直方圖選擇函數
 function selectHistogramProject(project) {
     selectedHistogramProject = project;
-    // 檢查當前選擇的量測者是否在新專案中可用
-    const availableMeasurers = getAvailableMeasurers(project, selectedHistogramOperation);
-    if (!availableMeasurers.includes(selectedHistogramGroup)) {
-        if (availableMeasurers.includes('涂X騰')) {
-            selectedHistogramGroup = '涂X騰';
-        } else if (availableMeasurers.length > 0) {
-            selectedHistogramGroup = availableMeasurers[0];
-        } else {
-            selectedHistogramGroup = null;
-        }
-    }
     updateActiveButtons('#histogramProjectButtons .control-btn', project);
-    initializeHistogramControls(); // 重新初始化控制面板
+    initializeHistogramControls(); // 重新初始化控制面板以更新可用的量測者選項
     updateHistogram();
 }
 
 function selectHistogramOperation(operation) {
     selectedHistogramOperation = operation;
-    // 檢查當前選擇的量測者是否在新操作中可用
-    const availableMeasurers = getAvailableMeasurers(selectedHistogramProject, operation);
-    if (!availableMeasurers.includes(selectedHistogramGroup)) {
-        if (availableMeasurers.includes('涂X騰')) {
-            selectedHistogramGroup = '涂X騰';
-        } else if (availableMeasurers.length > 0) {
-            selectedHistogramGroup = availableMeasurers[0];
-        } else {
-    selectedHistogramGroup = null;
-        }
-    }
-    selectedHistogramMeasurement = '測量值1'; // 設定預設測量值
-    
     updateActiveButtons('#histogramOperationButtons .control-btn', operation);
-    initializeHistogramControls(); // 重新初始化控制面板
     updateHistogram();
 }
 
 function selectHistogramGroup(group) {
     selectedHistogramGroup = group;
-    selectedHistogramMeasurement = '測量值1'; // 設定預設測量值
-    
     updateActiveButtons('#histogramGroupButtons .control-btn', group);
-    initializeHistogramControls(); // 重新初始化控制面板
     updateHistogram();
 }
 
-function selectHistogramMeasurement(measurement) {
-    selectedHistogramMeasurement = measurement;
-    updateActiveButtons('#histogramMeasurementButtons .control-btn', measurement);
+function selectHistogramMethod(method) {
+    selectedHistogramMethod = method;
+    updateActiveButtons('#histogramMeasurementButtons .control-btn', method);
     updateHistogram();
 }
 
 // 散佈圖選擇函數
 function selectScatterProject(project) {
     selectedScatterProject = project;
-    // 檢查當前選擇的量測者是否在新專案中可用
-    const availableMeasurers = getAvailableMeasurers(project, selectedScatterOperation);
-    if (!availableMeasurers.includes(selectedScatterGroup)) {
-        if (availableMeasurers.includes('涂X騰')) {
-            selectedScatterGroup = '涂X騰';
-        } else if (availableMeasurers.length > 0) {
-            selectedScatterGroup = availableMeasurers[0];
-        } else {
-            selectedScatterGroup = null;
-        }
-    }
     updateActiveButtons('#scatterProjectButtons .control-btn', project);
-    initializeScatterControls(); // 重新初始化控制面板
+    initializeScatterControls(); // 重新初始化控制面板以更新可用的量測者選項
     updateScatterPlot();
 }
 
 function selectScatterOperation(operation) {
     selectedScatterOperation = operation;
-    // 檢查當前選擇的量測者是否在新操作中可用
-    const availableMeasurers = getAvailableMeasurers(selectedScatterProject, operation);
-    if (!availableMeasurers.includes(selectedScatterGroup)) {
-        if (availableMeasurers.includes('涂X騰')) {
-            selectedScatterGroup = '涂X騰';
-        } else if (availableMeasurers.length > 0) {
-            selectedScatterGroup = availableMeasurers[0];
-        } else {
-    selectedScatterGroup = null;
-        }
-    }
-    selectedScatterX = '測量值1'; // 設定預設測量值
-    selectedScatterY = '測量值2'; // 設定預設測量值
-    
     updateActiveButtons('#scatterOperationButtons .control-btn', operation);
-    initializeScatterControls(); // 重新初始化控制面板
     updateScatterPlot();
 }
 
 function selectScatterGroup(group) {
     selectedScatterGroup = group;
-    selectedScatterX = '測量值1'; // 設定預設測量值
-    selectedScatterY = '測量值2'; // 設定預設測量值
-    
     updateActiveButtons('#scatterGroupButtons .control-btn', group);
-    initializeScatterControls(); // 重新初始化控制面板
     updateScatterPlot();
 }
 
-function selectScatterX(measurement) {
-    selectedScatterX = measurement;
-    updateActiveButtons('#scatterXMeasurementButtons .control-btn', measurement);
+function selectScatterMethodX(method) {
+    selectedScatterMethodX = method;
+    updateActiveButtons('#scatterXMeasurementButtons .control-btn', method);
     updateScatterPlot();
 }
 
-function selectScatterY(measurement) {
-    selectedScatterY = measurement;
-    updateActiveButtons('#scatterYMeasurementButtons .control-btn', measurement);
+function selectScatterMethodY(method) {
+    selectedScatterMethodY = method;
+    updateActiveButtons('#scatterYMeasurementButtons .control-btn', method);
     updateScatterPlot();
 }
 
@@ -672,38 +584,44 @@ function updateControlChart() {
     console.log('Updating control chart...');
     console.log('Selected Project:', selectedProject);
     console.log('Selected Measurer:', selectedMeasurer);
-    console.log('Selected Measurement:', selectedMeasurement);
+    console.log('Selected Method:', selectedMethod);
     
-    // 根據操作和測量值選擇決定使用哪個數據
-    let dataKey;
-    if (selectedMeasurement === '測量值1') {
-        dataKey = `${selectedProject}-${selectedMeasurer}-${selectedOperation}-測量值1`;
-    } else if (selectedMeasurement === '測量值2') {
-        dataKey = `${selectedProject}-${selectedMeasurer}-${selectedOperation}-測量值2`;
-    } else {
-        dataKey = `${selectedProject}-${selectedMeasurer}-${selectedOperation}`;
-    }
+    // 從原始數據中篩選符合條件的數據（選定量測者+手法，顯示所有該量測者用該手法測量的儀器）
+    const filteredData = circuitBreakerData.量測數據.filter(record => 
+        record.量測者 === selectedMeasurer &&
+        record.量測手法 === selectedMethod
+    ).filter(record => {
+        // 如果selectedProject不是"全部"，則進一步篩選
+        if (selectedProject === '全部') {
+            return true;
+        }
+        return record.儀器編號 === selectedProject;
+    });
     
-    console.log('Data Key:', dataKey);
-    
-    const data = phaseBreakdown[dataKey];
-    
-    if (!data) {
-        console.log(`No data found for ${dataKey}`);
+    if (filteredData.length === 0) {
+        console.log('No data found for selected filters');
         return;
     }
+    
+    // 提取測量值1和測量值2
+    const measurement1Data = filteredData.map(record => record[selectedOperation].測量值1);
+    const measurement2Data = filteredData.map(record => record[selectedOperation].測量值2);
+    
+    // 計算統計數據
+    const allValues = [...measurement1Data, ...measurement2Data];
+    const mean = allValues.reduce((a, b) => a + b, 0) / allValues.length;
+    const stdDev = Math.sqrt(allValues.reduce((sum, val) => sum + Math.pow(val - mean, 2), 0) / allValues.length);
+    
+    // 獲取規格界限
+    const limits = specLimits[selectedOperation];
     
     const titleElement = document.getElementById('controlChartTitle');
     if (titleElement) {
         let title;
-        const methodOrder = data.methodOrder || ['A', 'B', 'C', 'D']; // 預設順序
-        const methodString = methodOrder.join(', ');
-        if (selectedMeasurement === '測量值1') {
-            title = `${selectedProject}-${selectedMeasurer}-${selectedOperation}-測量值1 (手法${methodString}) 管制圖`;
-        } else if (selectedMeasurement === '測量值2') {
-            title = `${selectedProject}-${selectedMeasurer}-${selectedOperation}-測量值2 (手法${methodString}) 管制圖`;
+        if (selectedProject === '全部') {
+            title = `${selectedMeasurer}-${selectedOperation}-手法${selectedMethod} 管制圖`;
         } else {
-            title = `${selectedProject}-${selectedMeasurer}-${selectedOperation} (手法${methodString}) 管制圖`;
+            title = `${selectedProject}-${selectedMeasurer}-${selectedOperation}-手法${selectedMethod} 管制圖`;
         }
         titleElement.textContent = title;
     }
@@ -730,17 +648,47 @@ function updateControlChart() {
     
     const ctx = canvas.getContext('2d');
     
-    // 使用實際測量數據
-    const measurementData = data.measurements;
-    const methodOrder = data.methodOrder || ['A', 'B', 'C', 'D'];
-    const labels = Array.from({length: measurementData.length}, (_, i) => `No.${i + 1} (${methodOrder[i] || 'A'})`);
+    // 創建標籤 - 儀器編號
+    const labels = filteredData.map(record => record.儀器編號);
     
-    // 標註異常值
-    const pointColors = measurementData.map(value => {
-        if (data.outliersValues && data.outliersValues.includes(value)) {
-            return '#ef4444'; // 紅色標記異常值
-        }
-        return getMeasurementColor(selectedMeasurement);
+    // 檢查異常值
+    const checkOutlier = (value) => {
+        if (!limits) return false;
+        return value > limits.上限值 || value < limits.下限值;
+    };
+    
+    // 標註測量值1的點顏色
+    const pointColors1 = measurement1Data.map(value => {
+        return checkOutlier(value) ? '#ef4444' : '#3182ce';
+    });
+    
+    // 標註測量值2的點顏色
+    const pointColors2 = measurement2Data.map(value => {
+        return checkOutlier(value) ? '#ef4444' : '#3182ce';
+    });
+    
+    // 計算標準值（規格中間值）
+    const standardValue = limits && limits.標準值上限 !== undefined && limits.標準值下限 !== undefined 
+        ? (limits.標準值上限 + limits.標準值下限) / 2 
+        : mean;
+    
+    // 計算上限值和下限值
+    const upperLimit = limits && limits.上限值 !== undefined ? limits.上限值 : (mean + stdDev * 3);
+    const lowerLimit = limits && limits.下限值 !== undefined ? limits.下限值 : (mean - stdDev * 3);
+    
+    // 計算Y軸範圍，確保包含所有數據點和線條
+    const allChartValues = [...measurement1Data, ...measurement2Data, standardValue, upperLimit, lowerLimit];
+    const yAxisMin = Math.min(...allChartValues) * 0.9; // 留10%的邊距
+    const yAxisMax = Math.max(...allChartValues) * 1.1; // 留10%的邊距
+    
+    console.log('Control Chart Limits:', {
+        limits: limits,
+        standardValue: standardValue,
+        upperLimit: upperLimit,
+        lowerLimit: lowerLimit,
+        mean: mean,
+        yAxisMin: yAxisMin,
+        yAxisMax: yAxisMax
     });
     
     controlChart = new Chart(ctx, {
@@ -749,40 +697,56 @@ function updateControlChart() {
             labels: labels,
             datasets: [
                 {
-                    label: '測量值',
-                    data: measurementData,
-                    borderColor: getMeasurementColor(selectedMeasurement),
-                    backgroundColor: pointColors.map(color => color + '40'),
-                    pointBackgroundColor: pointColors,
+                    label: '測量值1',
+                    data: measurement1Data,
+                    borderColor: '#3182ce',
+                    backgroundColor: pointColors1.map(color => color + '40'),
+                    pointBackgroundColor: pointColors1,
+                    borderWidth: 2,
+                    pointRadius: 5,
+                    fill: false
+                },
+                {
+                    label: '測量值2',
+                    data: measurement2Data,
+                    borderColor: '#3182ce',
+                    backgroundColor: pointColors2.map(color => color + '40'),
+                    pointBackgroundColor: pointColors2,
                     borderWidth: 2,
                     pointRadius: 5,
                     fill: false
                 },
                 {
                     label: '標準值',
-                    data: new Array(measurementData.length).fill(data.mean),
+                    data: new Array(labels.length).fill(standardValue),
                     borderColor: '#10b981',
                     borderWidth: 2,
                     pointRadius: 0,
-                    fill: false
+                    pointHoverRadius: 0,
+                    fill: false,
+                    tension: 0
                 },
                 {
                     label: '上限值',
-                    data: new Array(measurementData.length).fill(data.usl),
+                    data: new Array(labels.length).fill(upperLimit),
                     borderColor: '#ef4444',
                     borderWidth: 2,
                     pointRadius: 0,
+                    pointHoverRadius: 0,
                     fill: false,
-                    borderDash: [10, 5]
+                    borderDash: [10, 5],
+                    tension: 0
                 },
                 {
                     label: '下限值',
-                    data: new Array(measurementData.length).fill(data.lsl),
+                    data: new Array(labels.length).fill(lowerLimit),
                     borderColor: '#ef4444',
                     borderWidth: 2,
                     pointRadius: 0,
+                    pointHoverRadius: 0,
                     fill: false,
-                    borderDash: [10, 5]
+                    borderDash: [10, 5],
+                    tension: 0
                 }
             ]
         },
@@ -808,21 +772,19 @@ function updateControlChart() {
                     borderWidth: 1,
                     callbacks: {
                         title: function(tooltipItems) {
-                            const methodOrder = data.methodOrder || ['A', 'B', 'C', 'D'];
                             const index = tooltipItems[0].dataIndex;
-                            const method = methodOrder[index] || 'A';
-                            return `${tooltipItems[0].label} - 測量手法${method}`;
+                            const instrument = filteredData[index].儀器編號;
+                            return `${instrument} - 手法${selectedMethod}`;
                         },
                         afterBody: function(tooltipItems) {
                             const value = tooltipItems[0].raw;
-                            if (data.outliersValues && data.outliersValues.includes(value)) {
-                                return ['', '⚠️ 異常值 (超出3σ界限)'];
-                            }
-                            if (data.usl && value > data.usl) {
+                            if (checkOutlier(value)) {
+                                if (limits && value > limits.上限值) {
                                 return ['', '🚫 超出規格上限'];
                             }
-                            if (data.lsl && value < data.lsl) {
+                                if (limits && value < limits.下限值) {
                                 return ['', '🚫 超出規格下限'];
+                                }
                             }
                             return '';
                         }
@@ -831,6 +793,11 @@ function updateControlChart() {
             },
             scales: {
                 x: {
+                    title: {
+                        display: true,
+                        text: '測量值',
+                        font: { size: 12, weight: 'bold' }
+                    },
                     ticks: {
                         maxTicksLimit: 8,
                         font: { size: 10 }
@@ -838,10 +805,16 @@ function updateControlChart() {
                 },
                 y: {
                     beginAtZero: false,
+                    min: Math.floor(yAxisMin),
+                    max: Math.ceil(yAxisMax),
                     ticks: {
                         font: { size: 10 }
                     }
                 }
+            },
+            interaction: {
+                intersect: false,
+                mode: 'index'
             }
         }
     });
@@ -850,30 +823,26 @@ function updateControlChart() {
 function updateHistogram() {
     console.log('Updating histogram...');
     
-    // 構建選擇的群組鍵 - 使用新的數據結構
-    let groupKey;
-    if (selectedHistogramMeasurement === '測量值1') {
-        groupKey = `${selectedHistogramProject}-${selectedHistogramGroup}-${selectedHistogramOperation}-測量值1`;
-    } else if (selectedHistogramMeasurement === '測量值2') {
-        groupKey = `${selectedHistogramProject}-${selectedHistogramGroup}-${selectedHistogramOperation}-測量值2`;
-    } else {
-        groupKey = `${selectedHistogramProject}-${selectedHistogramGroup}-${selectedHistogramOperation}`;
-    }
+    // 從原始數據中篩選符合條件的數據
+    const filteredData = circuitBreakerData.量測數據.filter(record => 
+        record.儀器編號 === selectedHistogramProject &&
+        record.量測者 === selectedHistogramGroup &&
+        record.量測手法 === selectedHistogramMethod
+    );
     
-    const data = phaseBreakdown[groupKey];
-    
-    if (!data) {
-        console.log(`No data found for ${groupKey}`);
+    if (filteredData.length === 0) {
+        console.log('No data found for selected filters');
         return;
     }
     
+    // 提取測量值1和測量值2
+    const measurement1Data = filteredData.map(record => record[selectedHistogramOperation].測量值1);
+    const measurement2Data = filteredData.map(record => record[selectedHistogramOperation].測量值2);
+    const histogramData = [...measurement1Data, ...measurement2Data];
+    
     const titleElement = document.getElementById('histogramTitle');
     if (titleElement) {
-        let title = `${selectedHistogramProject}-${selectedHistogramGroup}-${selectedHistogramOperation}`;
-        if (selectedHistogramMeasurement) {
-            title += `-${selectedHistogramMeasurement}`;
-        }
-        title += ` 分布直方圖`;
+        const title = `${selectedHistogramProject}-${selectedHistogramGroup}-${selectedHistogramOperation}-手法${selectedHistogramMethod} 分布直方圖`;
         titleElement.textContent = title;
     }
     
@@ -887,8 +856,7 @@ function updateHistogram() {
     
     const ctx = canvas.getContext('2d');
     
-    // 使用實際測量數據
-    const histogramData = data.measurements || generateMeasurementData(data.mean, data.stdDev, 100);
+    // 創建直方圖分箱
     const bins = createHistogramBins(histogramData, 10);
     
     histogramChart = new Chart(ctx, {
@@ -898,8 +866,8 @@ function updateHistogram() {
             datasets: [{
                 label: '頻次',
                 data: bins.map(bin => bin.count),
-                backgroundColor: getMeasurementColor(selectedHistogramMeasurement) + '80',
-                borderColor: getMeasurementColor(selectedHistogramMeasurement),
+                backgroundColor: '#3182ce80',
+                borderColor: '#3182ce',
                 borderWidth: 1
             }]
         },
@@ -934,17 +902,27 @@ function updateHistogram() {
 
 function updateScatterPlot() {
     console.log('Updating scatter plot...');
+    console.log('Selected filters:', {
+        project: selectedScatterProject,
+        operation: selectedScatterOperation,
+        group: selectedScatterGroup,
+        methodX: selectedScatterMethodX,
+        methodY: selectedScatterMethodY
+    });
     
     const titleElement = document.getElementById('scatterTitle');
     if (titleElement) {
-        let title = `${selectedScatterProject}-${selectedScatterGroup}-${selectedScatterOperation}`;
-        title += `-${selectedScatterX} vs ${selectedScatterY} 散布圖分析`;
+        let titleParts = [];
+        if (selectedScatterProject !== '全部') titleParts.push(selectedScatterProject);
+        if (selectedScatterGroup !== '全部') titleParts.push(selectedScatterGroup);
+        titleParts.push(selectedScatterOperation);
+        const title = titleParts.join('-') + `-手法${selectedScatterMethodX} vs 手法${selectedScatterMethodY} 散布圖分析`;
         titleElement.textContent = title;
     }
     
     const phaseInfo = document.getElementById('scatterPhaseInfo');
     if (phaseInfo) {
-        phaseInfo.textContent = `觀察${selectedScatterX}與${selectedScatterY}之間的相關性，數據呈現良好一致性，反映測量品質穩定。`;
+        phaseInfo.textContent = `觀察手法${selectedScatterMethodX}與手法${selectedScatterMethodY}之間測量值的相關性，數據呈現良好一致性，反映測量品質穩定。`;
     }
     
     if (scatterChart) {
@@ -960,89 +938,113 @@ function updateScatterPlot() {
     // 生成散布圖數據
     const dataPoints = [];
     
-    // 構建X軸和Y軸的群組鍵 - 使用新的數據結構
-    let xGroupKey, yGroupKey;
-    if (selectedScatterX === '測量值1') {
-        xGroupKey = `${selectedScatterProject}-${selectedScatterGroup}-${selectedScatterOperation}-測量值1`;
-    } else if (selectedScatterX === '測量值2') {
-        xGroupKey = `${selectedScatterProject}-${selectedScatterGroup}-${selectedScatterOperation}-測量值2`;
-    } else {
-        xGroupKey = `${selectedScatterProject}-${selectedScatterGroup}-${selectedScatterOperation}`;
-    }
+    // 從原始數據中篩選符合條件的數據（X軸手法）
+    const filteredDataX = circuitBreakerData.量測數據.filter(record => {
+        // 篩選儀器編號
+        if (selectedScatterProject !== '全部' && record.儀器編號 !== selectedScatterProject) {
+            return false;
+        }
+        // 篩選量測者
+        if (selectedScatterGroup !== '全部' && record.量測者 !== selectedScatterGroup) {
+            return false;
+        }
+        // 篩選X軸量測手法
+        if (record.量測手法 !== selectedScatterMethodX) {
+            return false;
+        }
+        return true;
+    });
     
-    if (selectedScatterY === '測量值1') {
-        yGroupKey = `${selectedScatterProject}-${selectedScatterGroup}-${selectedScatterOperation}-測量值1`;
-    } else if (selectedScatterY === '測量值2') {
-        yGroupKey = `${selectedScatterProject}-${selectedScatterGroup}-${selectedScatterOperation}-測量值2`;
-    } else {
-        yGroupKey = `${selectedScatterProject}-${selectedScatterGroup}-${selectedScatterOperation}`;
-    }
+    console.log('Filtered X data:', filteredDataX.length);
     
-    const xData = phaseBreakdown[xGroupKey];
-    const yData = phaseBreakdown[yGroupKey];
+    // 從原始數據中篩選符合條件的數據（Y軸手法）
+    const filteredDataY = circuitBreakerData.量測數據.filter(record => {
+        // 篩選儀器編號
+        if (selectedScatterProject !== '全部' && record.儀器編號 !== selectedScatterProject) {
+            return false;
+        }
+        // 篩選量測者
+        if (selectedScatterGroup !== '全部' && record.量測者 !== selectedScatterGroup) {
+            return false;
+        }
+        // 篩選Y軸量測手法
+        if (record.量測手法 !== selectedScatterMethodY) {
+            return false;
+        }
+        return true;
+    });
     
-    if (xData && yData && xData.measurements && yData.measurements) {
-        const minLength = Math.min(xData.measurements.length, yData.measurements.length);
-        const methodOrder = xData.methodOrder || yData.methodOrder || ['A', 'B', 'C', 'D'];
-        
-        // 如果X軸和Y軸選擇不同的測量值，需要顯示8個點
-        if (selectedScatterX !== selectedScatterY) {
-            // 第1組: X軸測量值 vs Y軸測量值
-        for (let i = 0; i < minLength; i++) {
+    console.log('Filtered Y data:', filteredDataY.length);
+    
+    if (filteredDataX.length > 0 && filteredDataY.length > 0) {
+        // 如果X軸和Y軸選擇不同的手法，只顯示2組組合（測量值1 vs 測量值1，測量值2 vs 測量值2）
+        if (selectedScatterMethodX !== selectedScatterMethodY) {
+            // 第1組: X軸手法的測量值1 vs Y軸手法的測量值1
+            for (let i = 0; i < Math.min(filteredDataX.length, filteredDataY.length); i++) {
+                const xRecord = filteredDataX[i];
+                const yRecord = filteredDataY[i];
             dataPoints.push({
-                x: xData.measurements[i],
-                y: yData.measurements[i],
-                    project: selectedScatterProject,
-                    method: methodOrder[i] || 'A',
-                    xLabel: selectedScatterX,  // X座標實際代表的測量值
-                    yLabel: selectedScatterY   // Y座標實際代表的測量值
+                    x: xRecord[selectedScatterOperation].測量值1,
+                    y: yRecord[selectedScatterOperation].測量值1,
+                    project: xRecord.儀器編號,
+                    measurer: xRecord.量測者,
+                    xMethod: selectedScatterMethodX,
+                    yMethod: selectedScatterMethodY,
+                    xLabel: '測量值1',
+                    yLabel: '測量值1'
                 });
             }
             
-            // 第2組: Y軸測量值 vs X軸測量值 (反向)
-            for (let i = 0; i < minLength; i++) {
+            // 第2組: X軸手法的測量值2 vs Y軸手法的測量值2
+            for (let i = 0; i < Math.min(filteredDataX.length, filteredDataY.length); i++) {
+                const xRecord = filteredDataX[i];
+                const yRecord = filteredDataY[i];
                 dataPoints.push({
-                    x: yData.measurements[i],
-                    y: xData.measurements[i],
-                    project: selectedScatterProject,
-                    method: methodOrder[i] || 'A',
-                    xLabel: selectedScatterY,  // X座標實際代表的測量值
-                    yLabel: selectedScatterX   // Y座標實際代表的測量值
+                    x: xRecord[selectedScatterOperation].測量值2,
+                    y: yRecord[selectedScatterOperation].測量值2,
+                    project: xRecord.儀器編號,
+                    measurer: xRecord.量測者,
+                    xMethod: selectedScatterMethodX,
+                    yMethod: selectedScatterMethodY,
+                    xLabel: '測量值2',
+                    yLabel: '測量值2'
                 });
             }
         } else {
-            // 如果X軸和Y軸選擇相同的測量值，只顯示4個點
-            for (let i = 0; i < minLength; i++) {
+            // 如果X軸和Y軸選擇相同的手法，顯示測量值1 vs 測量值2
+            for (let i = 0; i < filteredDataX.length; i++) {
+                const record = filteredDataX[i];
                 dataPoints.push({
-                    x: xData.measurements[i],
-                    y: yData.measurements[i],
-                    project: selectedScatterProject,
-                    method: methodOrder[i] || 'A',
-                    xLabel: selectedScatterX,
-                    yLabel: selectedScatterY
+                    x: record[selectedScatterOperation].測量值1,
+                    y: record[selectedScatterOperation].測量值2,
+                    project: record.儀器編號,
+                    measurer: record.量測者,
+                    xMethod: selectedScatterMethodX,
+                    yMethod: selectedScatterMethodX,
+                    xLabel: '測量值1',
+                    yLabel: '測量值2'
                 });
             }
         }
     }
     
-    // 根據選擇的操作類型決定軸範圍
-    let xAxisMin, xAxisMax, yAxisMin, yAxisMax;
-    if (selectedScatterOperation === '閉合') {
-        // 閉合操作：使用 85-120 範圍
-        xAxisMin = 85;
-        xAxisMax = 120;
-        yAxisMin = 85;
-        yAxisMax = 120;
-    } else {
-        // 開啟操作：使用 26-33 範圍
-        xAxisMin = 26;
-        xAxisMax = 33;
-        yAxisMin = 26;
-        yAxisMax = 33;
-    }
+    console.log('Generated data points:', dataPoints.length);
     
     // 計算相關係數
-    const correlation = 0.95; // 根據實際數據品質設定為0.95
+    let correlation = 0;
+    if (selectedScatterMethodX === selectedScatterMethodY) {
+        // 當X軸和Y軸選擇相同手法時，相關性為1（完美相關）
+        correlation = 1;
+    } else if (dataPoints.length > 1) {
+        // 當選擇不同手法時，計算實際相關性
+        correlation = calculateCorrelation(dataPoints);
+        // 處理NaN或Infinity的情況
+        if (!isFinite(correlation)) {
+            correlation = 0;
+        }
+        // 限制相關性在-1到1之間
+        correlation = Math.max(-1, Math.min(1, correlation));
+    }
     
     // 更新統計資訊
     const correlationElement = document.getElementById('correlationValue');
@@ -1050,17 +1052,56 @@ function updateScatterPlot() {
         correlationElement.textContent = correlation.toFixed(2);
     }
     
+    // 設置軸範圍
+    let xAxisMin, xAxisMax, yAxisMin, yAxisMax, stepSize;
+    
+    if (selectedScatterOperation === '閉合') {
+        // 閉合操作：固定範圍 92-100，差距為1
+        xAxisMin = 92;
+        xAxisMax = 100;
+        yAxisMin = 92;
+        yAxisMax = 100;
+        stepSize = 1;
+    } else {
+        // 開啟操作：固定範圍 26-33，差距為1
+        xAxisMin = 26;
+        xAxisMax = 33;
+        yAxisMin = 26;
+        yAxisMax = 33;
+        stepSize = 1;
+    }
+    
+    // 根據選擇條件決定分組依據
+    // 如果選擇了"全部"儀器或"全部"量測者，按該維度分組顯示
+    const groupBy = selectedScatterProject === '全部' ? 'project' : 'measurer';
+    
+    // 按分組維度整理數據
+    const groupedData = {};
+    dataPoints.forEach(point => {
+        const key = groupBy === 'project' ? point.project : point.measurer;
+        if (!groupedData[key]) {
+            groupedData[key] = [];
+        }
+        groupedData[key].push(point);
+    });
+    
+    // 創建多個datasets，每個代表一個分組
+    const datasets = Object.keys(groupedData).map(key => {
+        const color = groupBy === 'project' ? getProjectColor(key) : getMeasurerColor(key);
+        return {
+            label: key,
+            data: groupedData[key],
+            backgroundColor: color + '60',
+            borderColor: color,
+            pointRadius: 4,
+            pointHoverRadius: 6
+        };
+    });
+    
     scatterChart = new Chart(ctx, {
         type: 'scatter',
         data: {
-            datasets: [{
-                label: `${getMeasurementText(selectedScatterX)} vs ${getMeasurementText(selectedScatterY)}`,
-                data: dataPoints,
-                backgroundColor: dataPoints.map(point => getProjectColor(point.project) + '60'),
-                borderColor: dataPoints.map(point => getProjectColor(point.project)),
-                pointRadius: 4,
-                pointHoverRadius: 6
-            }]
+            datasets: datasets
         },
         options: {
             responsive: true,
@@ -1090,13 +1131,13 @@ function updateScatterPlot() {
                                 return Math.abs(p.x - currentX) < 0.001 && Math.abs(p.y - currentY) < 0.001;
                             });
                             
-                            // 如果只有一個點，直接返回儀器編號
+                            // 如果只有一個點，顯示儀器編號和量測者
                             if (overlappingPoints.length === 1) {
-                                return `${currentPoint.project}`;
+                                return `${currentPoint.project} - ${currentPoint.measurer}`;
                             }
                             
                             // 如果有多個完全重疊的點，顯示數量
-                            return `${currentPoint.project} (${overlappingPoints.length}個重疊點)`;
+                            return `${currentPoint.project} - ${currentPoint.measurer} (${overlappingPoints.length}個重疊點)`;
                         },
                         label: function(context) {
                             const currentPoint = dataPoints[context.dataIndex];
@@ -1108,10 +1149,10 @@ function updateScatterPlot() {
                                 return Math.abs(p.x - currentX) < 0.001 && Math.abs(p.y - currentY) < 0.001;
                             });
                             
-                            // 如果只有一個點，只顯示X軸座標對應的測量值
+                            // 如果只有一個點，顯示儀器編號、量測者和測量值
                             if (overlappingPoints.length === 1) {
                                 const xText = getMeasurementText(currentPoint.xLabel);
-                                return `${xText}: ${currentX.toFixed(2)} (測量手法${currentPoint.method})`;
+                                return `${currentPoint.project} - ${currentPoint.measurer}: X: ${xText} (手法${currentPoint.xMethod}): ${currentX.toFixed(2)}, Y: ${currentPoint.yLabel} (手法${currentPoint.yMethod}): ${currentY.toFixed(2)}`;
                             }
                             
                             // 如果有多個完全重疊的點，按測量值大小排序，若相同則測量值1優先
@@ -1130,15 +1171,14 @@ function updateScatterPlot() {
                                 if (aIsMeasure1 && !bIsMeasure1) return -1;
                                 if (!aIsMeasure1 && bIsMeasure1) return 1;
                                 // 都是同類型，按手法排序
-                                return a.method.localeCompare(b.method);
+                                return a.xMethod.localeCompare(b.xMethod);
                             });
                             
-                            // 顯示所有重疊點的X軸測量值信息
+                            // 顯示所有重疊點的測量值信息
                             const labels = [];
                             overlappingPoints.forEach((point, index) => {
                                 if (index > 0) labels.push(''); // 添加空行分隔
-                                const xText = getMeasurementText(point.xLabel);
-                                labels.push(`${xText}: ${currentX.toFixed(2)} (測量手法${point.method})`);
+                                labels.push(`${point.project} - ${point.measurer}: X: ${point.xLabel} (手法${point.xMethod}): ${currentX.toFixed(2)}, Y: ${point.yLabel} (手法${point.yMethod}): ${currentY.toFixed(2)}`);
                             });
                             
                             return labels;
@@ -1150,26 +1190,32 @@ function updateScatterPlot() {
                 x: {
                     title: {
                         display: true,
-                        text: `${getMeasurementText(selectedScatterX)}`,
+                        text: `手法${selectedScatterMethodX}`,
                         font: { size: 12, weight: 'bold' }
                     },
                     grid: {
                         color: '#f3f4f6'
                     },
                     min: xAxisMin,
-                    max: xAxisMax
+                    max: xAxisMax,
+                    ticks: {
+                        stepSize: stepSize
+                    }
                 },
                 y: {
                     title: {
                         display: true,
-                        text: `${getMeasurementText(selectedScatterY)}`,
+                        text: `手法${selectedScatterMethodY}`,
                         font: { size: 12, weight: 'bold' }
                     },
                     grid: {
                         color: '#f3f4f6'
                     },
                     min: yAxisMin,
-                    max: yAxisMax
+                    max: yAxisMax,
+                    ticks: {
+                        stepSize: stepSize
+                    }
                 }
             }
         }
@@ -1398,6 +1444,16 @@ function getProjectColor(project) {
     return colors[index % colors.length];
 }
 
+function getMeasurerColor(measurer) {
+    const colors = {
+        '涂X騰': '#e53e3e',
+        '余O濤': '#38a169',
+        '洪O祥': '#3182ce',
+        '游X潔': '#d69e2e'
+    };
+    return colors[measurer] || '#805ad5';
+}
+
 function getMeasurementText(measurement) {
     switch(measurement) {
         case '測量值1': return '測量值1';
@@ -1478,18 +1534,18 @@ function initializeControls() {
         }
     }
     
-    // 測量值按鈕 - 測量值1和測量值2
+    // 量測手法按鈕 - A, B, C, D
     const measurementButtons = document.getElementById('measurementButtons');
     if (measurementButtons) {
         measurementButtons.innerHTML = '';
-        const measurements = ['測量值1', '測量值2'];
+        const methods = ['A', 'B', 'C', 'D'];
         
-        measurements.forEach(measurement => {
+        methods.forEach(method => {
             const btn = document.createElement('button');
-            btn.className = `control-btn ${measurement === selectedMeasurement ? 'active' : ''}`;
-            btn.textContent = measurement;
-            btn.dataset.value = measurement;
-            btn.addEventListener('click', () => selectMeasurement(measurement));
+            btn.className = `control-btn ${method === selectedMethod ? 'active' : ''}`;
+            btn.textContent = `手法${method}`;
+            btn.dataset.value = method;
+            btn.addEventListener('click', () => selectMethod(method));
             measurementButtons.appendChild(btn);
         });
     }
@@ -1539,18 +1595,18 @@ function initializeHistogramControls() {
             });
     }
     
-    // 測量項目按鈕
+    // 量測手法按鈕
     const measurementButtons = document.getElementById('histogramMeasurementButtons');
     if (measurementButtons) {
         measurementButtons.innerHTML = '';
-        const measurements = ['測量值1', '測量值2'];
+        const methods = ['A', 'B', 'C', 'D'];
         
-        measurements.forEach(measurement => {
+        methods.forEach(method => {
             const btn = document.createElement('button');
-            btn.className = `control-btn ${measurement === selectedHistogramMeasurement ? 'active' : ''}`;
-            btn.textContent = measurement;
-            btn.dataset.value = measurement;
-            btn.addEventListener('click', () => selectHistogramMeasurement(measurement));
+            btn.className = `control-btn ${method === selectedHistogramMethod ? 'active' : ''}`;
+            btn.textContent = `手法${method}`;
+            btn.dataset.value = method;
+            btn.addEventListener('click', () => selectHistogramMethod(method));
             measurementButtons.appendChild(btn);
         });
     }
@@ -1558,11 +1614,12 @@ function initializeHistogramControls() {
 
 // 散佈圖控制面板初始化
 function initializeScatterControls() {
-    // 專案按鈕
+    // 專案按鈕 - 添加"全部"選項
     const projectButtons = document.getElementById('scatterProjectButtons');
     if (projectButtons) {
         projectButtons.innerHTML = '';
-        projects.forEach(project => {
+        const allProjects = ['全部', ...projects];
+        allProjects.forEach(project => {
             const btn = document.createElement('button');
             btn.className = `control-btn ${project === selectedScatterProject ? 'active' : ''}`;
             btn.textContent = project;
@@ -1585,12 +1642,23 @@ function initializeScatterControls() {
         });
     }
     
-    // 量測者按鈕
+    // 量測者按鈕 - 添加"全部"選項
     const groupButtons = document.getElementById('scatterGroupButtons');
     if (groupButtons) {
         groupButtons.innerHTML = '';
-        const availableMeasurers = getAvailableMeasurers(selectedScatterProject, selectedScatterOperation);
-        availableMeasurers.forEach(measurer => {
+        let availableMeasurers;
+        if (selectedScatterProject === '全部') {
+            // 如果選擇全部儀器，顯示所有量測者
+            const allMeasurers = new Set();
+            projects.forEach(proj => {
+                getAvailableMeasurers(proj, selectedScatterOperation).forEach(m => allMeasurers.add(m));
+            });
+            availableMeasurers = Array.from(allMeasurers);
+        } else {
+            availableMeasurers = getAvailableMeasurers(selectedScatterProject, selectedScatterOperation);
+        }
+        const allMeasurers = ['全部', ...availableMeasurers];
+        allMeasurers.forEach(measurer => {
                 const btn = document.createElement('button');
             btn.className = `control-btn ${measurer === selectedScatterGroup ? 'active' : ''}`;
             btn.textContent = measurer;
@@ -1600,34 +1668,34 @@ function initializeScatterControls() {
             });
     }
     
-    // X軸測量項目按鈕
+    // X軸量測手法按鈕
     const xMeasurementButtons = document.getElementById('scatterXMeasurementButtons');
     if (xMeasurementButtons) {
         xMeasurementButtons.innerHTML = '';
-        const measurements = ['測量值1', '測量值2'];
+        const methods = ['A', 'B', 'C', 'D'];
         
-        measurements.forEach(measurement => {
+        methods.forEach(method => {
             const btn = document.createElement('button');
-            btn.className = `control-btn ${measurement === selectedScatterX ? 'active' : ''}`;
-            btn.textContent = measurement;
-            btn.dataset.value = measurement;
-            btn.addEventListener('click', () => selectScatterX(measurement));
+            btn.className = `control-btn ${method === selectedScatterMethodX ? 'active' : ''}`;
+            btn.textContent = `手法${method}`;
+            btn.dataset.value = method;
+            btn.addEventListener('click', () => selectScatterMethodX(method));
             xMeasurementButtons.appendChild(btn);
         });
     }
     
-    // Y軸測量項目按鈕
+    // Y軸量測手法按鈕
     const yMeasurementButtons = document.getElementById('scatterYMeasurementButtons');
     if (yMeasurementButtons) {
         yMeasurementButtons.innerHTML = '';
-        const measurements = ['測量值1', '測量值2'];
+        const methods = ['A', 'B', 'C', 'D'];
         
-        measurements.forEach(measurement => {
+        methods.forEach(method => {
             const btn = document.createElement('button');
-            btn.className = `control-btn ${measurement === selectedScatterY ? 'active' : ''}`;
-            btn.textContent = measurement;
-            btn.dataset.value = measurement;
-            btn.addEventListener('click', () => selectScatterY(measurement));
+            btn.className = `control-btn ${method === selectedScatterMethodY ? 'active' : ''}`;
+            btn.textContent = `手法${method}`;
+            btn.dataset.value = method;
+            btn.addEventListener('click', () => selectScatterMethodY(method));
             yMeasurementButtons.appendChild(btn);
         });
     }
@@ -1639,46 +1707,143 @@ function initializeOverviewTable() {
     
     tbody.innerHTML = '';
     
-    Object.keys(spcData).forEach(groupKey => {
-        const data = spcData[groupKey];
-        const [project, measurer, operation, measurement] = groupKey.split('-');
+    // 按照量測手法分組重新組織數據
+    const methodGroups = {};
+    
+    // 從原始數據中按照量測手法、量測者、操作類型分組
+    const methods = ['A', 'B', 'C', 'D'];
+    const operations = ['閉合', '開啟'];
+    
+    measurementData.forEach(record => {
+        const method = record.量測手法;
+        const measurer = record.量測者;
+        const instrument = record.儀器編號;
+        
+        operations.forEach(operation => {
+            const key = `${instrument}-${measurer}-${operation}-${method}`;
+            
+            if (!methodGroups[key]) {
+                methodGroups[key] = {
+                    儀器編號: instrument,
+                    量測者: measurer,
+                    操作: operation,
+                    量測手法: method,
+                    測量值1: [],
+                    測量值2: []
+                };
+            }
+            
+            // 添加測量值1和測量值2
+            if (record[operation] && record[operation].測量值1 !== null && record[operation].測量值1 !== undefined) {
+                methodGroups[key].測量值1.push(record[operation].測量值1);
+            }
+            if (record[operation] && record[operation].測量值2 !== null && record[operation].測量值2 !== undefined) {
+                methodGroups[key].測量值2.push(record[operation].測量值2);
+            }
+        });
+    });
+    
+    // 按照專案順序（20240304A → 20240304B → 20240304C → 20250224A）排序
+    // 每個專案內：量測者 → 操作類型（閉合 → 開啟）→ 量測手法（A → B → C → D）
+    const projectOrder = {
+        '20240304A': 1,
+        '20240304B': 2,
+        '20240304C': 3,
+        '20250224A': 4
+    };
+    const measurerOrder = {
+        '涂X騰': 1,
+        '余O濤': 2,
+        '洪O祥': 3,
+        '游X潔': 4
+    };
+    const operationOrder = {
+        '閉合': 1,
+        '開啟': 2
+    };
+    const methodOrder = {
+        'A': 1,
+        'B': 2,
+        'C': 3,
+        'D': 4
+    };
+    
+    const sortedKeys = Object.keys(methodGroups).sort((a, b) => {
+        const [projectA, measurerA, operationA, methodA] = a.split('-');
+        const [projectB, measurerB, operationB, methodB] = b.split('-');
+        
+        // 1. 先按儀器編號排序（專案順序）
+        const projectOrderA = projectOrder[projectA] || 99;
+        const projectOrderB = projectOrder[projectB] || 99;
+        if (projectOrderA !== projectOrderB) {
+            return projectOrderA - projectOrderB;
+        }
+        
+        // 2. 再按量測者排序
+        const measurerOrderA = measurerOrder[measurerA] || 99;
+        const measurerOrderB = measurerOrder[measurerB] || 99;
+        if (measurerOrderA !== measurerOrderB) {
+            return measurerOrderA - measurerOrderB;
+        }
+        
+        // 3. 再按操作類型排序（閉合在前）
+        const operationOrderA = operationOrder[operationA] || 99;
+        const operationOrderB = operationOrder[operationB] || 99;
+        if (operationOrderA !== operationOrderB) {
+            return operationOrderA - operationOrderB;
+        }
+        
+        // 4. 最後按量測手法排序（A、B、C、D）
+        const methodOrderA = methodOrder[methodA] || 99;
+        const methodOrderB = methodOrder[methodB] || 99;
+        return methodOrderA - methodOrderB;
+    });
+    
+    sortedKeys.forEach(key => {
+        const group = methodGroups[key];
+        const allValues = [...group.測量值1, ...group.測量值2];
+        
+        if (allValues.length > 0) {
+            const stats = calculateStats(allValues);
+            const limits = specLimits[group.操作] || {};
+            const outliers = detectOutliersWithDiagnosis(allValues, stats.mean, stats.stdDev, limits.上限值, limits.下限值);
         
         const row = tbody.insertRow();
         
-        // 狀態根據「平均值」與標準/規格範圍決定
+            // 狀態根據「平均值」與標準/規格範圍決定
         let status = 'excellent';
         let statusText = '優良';
-        const limits = specLimits[operation] || {};
-        const stdLower = limits['標準值下限'];
-        const stdUpper = limits['標準值上限'];
-        const lsl = limits['下限值'];
-        const usl = limits['上限值'];
-        const mean = data.mean;
+            const stdLower = limits['標準值下限'];
+            const stdUpper = limits['標準值上限'];
+            const lsl = limits['下限值'];
+            const usl = limits['上限值'];
+            const mean = stats.mean;
 
-        if (typeof mean === 'number') {
-            if ((typeof lsl === 'number' && mean < lsl) || (typeof usl === 'number' && mean > usl)) {
+            if (typeof mean === 'number') {
+                if ((typeof lsl === 'number' && mean < lsl) || (typeof usl === 'number' && mean > usl)) {
             status = 'critical';
             statusText = '異常';
-            } else if ((typeof stdLower === 'number' && mean < stdLower) || (typeof stdUpper === 'number' && mean > stdUpper)) {
+                } else if ((typeof stdLower === 'number' && mean < stdLower) || (typeof stdUpper === 'number' && mean > stdUpper)) {
             status = 'warning';
             statusText = '可改善';
-            } else {
-                status = 'excellent';
-                statusText = '優良';
-            }
+                } else {
+                    status = 'excellent';
+                    statusText = '優良';
+                }
         }
         
         row.innerHTML = `
-            <td style="font-weight: 600;">${project}</td>
-            <td>${operation}${measurer ? '-' + measurer : ''}-${measurement}</td>
-            <td>${data.n}</td>
-            <td>${data.mean.toFixed(2)}</td>
-            <td>${data.stdDev.toFixed(2)}</td>
-            <td style="color: #dc2626;">${data.lsl ? `${data.lsl}~` : '≤'}${data.usl}</td>
-            <td style="color: #f59e0b;">${specLimits[operation]?.["標準值下限"] ?? ''}~${specLimits[operation]?.["標準值上限"] ?? ''}</td>
-            <td class="${data.outliers > 0 ? 'status-critical' : 'status-excellent'}">${data.outliers}</td>
+                <td style="font-weight: 600;">${group.儀器編號}</td>
+                <td>${group.操作}-${group.量測者}-量測手法${group.量測手法} (測量值1&2)</td>
+                <td>${stats.n}</td>
+                <td>${stats.mean.toFixed(2)}</td>
+                <td>${stats.stdDev.toFixed(2)}</td>
+                <td style="color: #dc2626;">${limits.下限值 ? `${limits.下限值}~` : '≤'}${limits.上限值}</td>
+                <td style="color: #f59e0b;">${limits.標準值下限 ?? ''}~${limits.標準值上限 ?? ''}</td>
+                <td class="${outliers.length > 0 ? 'status-critical' : 'status-excellent'}">${outliers.length}</td>
             <td class="status-${status}">${statusText}</td>
         `;
+        }
     });
 }
 
@@ -1688,30 +1853,128 @@ function initializeStatisticsTable() {
     
     tbody.innerHTML = '';
     
-    Object.keys(phaseBreakdown).forEach(phaseKey => {
-        const data = phaseBreakdown[phaseKey];
-        const [project, measurer, operation, measurement] = phaseKey.split('-');
+    // 按照量測手法分組重新組織數據
+    const methodGroups = {};
+    
+    // 從原始數據中按照量測手法、量測者、操作類型分組
+    const methods = ['A', 'B', 'C', 'D'];
+    const operations = ['閉合', '開啟'];
+    
+    measurementData.forEach(record => {
+        const method = record.量測手法;
+        const measurer = record.量測者;
+        const instrument = record.儀器編號;
         
-        const row = tbody.insertRow();
+        operations.forEach(operation => {
+            const key = `${instrument}-${measurer}-${operation}-${method}`;
+            
+            if (!methodGroups[key]) {
+                methodGroups[key] = {
+                    儀器編號: instrument,
+                    量測者: measurer,
+                    操作: operation,
+                    量測手法: method,
+                    測量值1: [],
+                    測量值2: []
+                };
+            }
+            
+            // 添加測量值1和測量值2
+            if (record[operation] && record[operation].測量值1 !== null && record[operation].測量值1 !== undefined) {
+                methodGroups[key].測量值1.push(record[operation].測量值1);
+            }
+            if (record[operation] && record[operation].測量值2 !== null && record[operation].測量值2 !== undefined) {
+                methodGroups[key].測量值2.push(record[operation].測量值2);
+            }
+        });
+    });
+    
+    // 按照專案順序（20240304A → 20240304B → 20240304C → 20250224A）排序
+    // 每個專案內：量測者 → 操作類型（閉合 → 開啟）→ 量測手法（A → B → C → D）
+    const projectOrder = {
+        '20240304A': 1,
+        '20240304B': 2,
+        '20240304C': 3,
+        '20250224A': 4
+    };
+    const measurerOrder = {
+        '涂X騰': 1,
+        '余O濤': 2,
+        '洪O祥': 3,
+        '游X潔': 4
+    };
+    const operationOrder = {
+        '閉合': 1,
+        '開啟': 2
+    };
+    const methodOrder = {
+        'A': 1,
+        'B': 2,
+        'C': 3,
+        'D': 4
+    };
+    
+    const sortedKeys = Object.keys(methodGroups).sort((a, b) => {
+        const [projectA, measurerA, operationA, methodA] = a.split('-');
+        const [projectB, measurerB, operationB, methodB] = b.split('-');
         
-        let statusClass = 'excellent';
-        let status = '正常';
-        if (data.outliers > 0) {
-            statusClass = 'critical';
-            status = '異常';
+        // 1. 先按儀器編號排序（專案順序）
+        const projectOrderA = projectOrder[projectA] || 99;
+        const projectOrderB = projectOrder[projectB] || 99;
+        if (projectOrderA !== projectOrderB) {
+            return projectOrderA - projectOrderB;
         }
         
-        row.innerHTML = `
-            <td>${project}</td>
-            <td>${operation}${measurer ? '-' + measurer : ''}-${measurement}</td>
-            <td>${data.n}</td>
-            <td>${data.mean.toFixed(2)}</td>
-            <td>${data.stdDev.toFixed(2)}</td>
-            <td>${data.min ? data.min.toFixed(2) : 'N/A'}</td>
-            <td>${data.max ? data.max.toFixed(2) : 'N/A'}</td>
-            <td class="${data.outliers > 0 ? 'status-critical' : 'status-excellent'}">${data.outliers}</td>
-            <td class="status-${statusClass}">${status}</td>
-        `;
+        // 2. 再按量測者排序
+        const measurerOrderA = measurerOrder[measurerA] || 99;
+        const measurerOrderB = measurerOrder[measurerB] || 99;
+        if (measurerOrderA !== measurerOrderB) {
+            return measurerOrderA - measurerOrderB;
+        }
+        
+        // 3. 再按操作類型排序（閉合在前）
+        const operationOrderA = operationOrder[operationA] || 99;
+        const operationOrderB = operationOrder[operationB] || 99;
+        if (operationOrderA !== operationOrderB) {
+            return operationOrderA - operationOrderB;
+        }
+        
+        // 4. 最後按量測手法排序（A、B、C、D）
+        const methodOrderA = methodOrder[methodA] || 99;
+        const methodOrderB = methodOrder[methodB] || 99;
+        return methodOrderA - methodOrderB;
+    });
+    
+    sortedKeys.forEach(key => {
+        const group = methodGroups[key];
+        const allValues = [...group.測量值1, ...group.測量值2];
+        
+        if (allValues.length > 0) {
+            const stats = calculateStats(allValues);
+            const limits = specLimits[group.操作] || {};
+            const outliers = detectOutliersWithDiagnosis(allValues, stats.mean, stats.stdDev, limits.上限值, limits.下限值);
+            
+            const row = tbody.insertRow();
+            
+            let statusClass = 'excellent';
+            let status = '正常';
+            if (outliers.length > 0) {
+                statusClass = 'critical';
+                status = '異常';
+            }
+            
+            row.innerHTML = `
+                <td>${group.儀器編號}</td>
+                <td>${group.操作}-${group.量測者}-量測手法${group.量測手法} (測量值1&2)</td>
+                <td>${stats.n}</td>
+                <td>${stats.mean.toFixed(2)}</td>
+                <td>${stats.stdDev.toFixed(2)}</td>
+                <td>${stats.min ? stats.min.toFixed(2) : 'N/A'}</td>
+                <td>${stats.max ? stats.max.toFixed(2) : 'N/A'}</td>
+                <td class="${outliers.length > 0 ? 'status-critical' : 'status-excellent'}">${outliers.length}</td>
+                <td class="status-${statusClass}">${status}</td>
+            `;
+        }
     });
 }
 
